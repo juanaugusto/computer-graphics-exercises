@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Quadrado girando em torno de algum vértice</title>
+
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery/jquery-1.12.4.js"></script>
+    <script src="js/jquery/jquery-ui.js"></script>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex" >
+        attribute vec4 vPosition;
+        uniform float theta;
+        uniform vec4 u_Translation;
+
+        uniform float sentido_rot;
+
+        attribute vec4 aVertexColor;
+
+        varying lowp vec4 vColor;
+
+
+        void
+        main()
+        {
+            vec4 traz_pra_origem;
+            vec4 gira;
+            const float factor = 3.141592653589793238462643383/180.0;
+
+            float s = sentido_rot*sin( theta * factor);
+            float c = cos( theta * factor);
+
+            //gl_Position.x = -s * vPosition.x + c * vPosition.y ;
+            //gl_Position.y =  s * vPosition.y + c * vPosition.x ;
+            //gl_Position.z = 0.0 ;
+            //gl_Position.w = 1.0 ;
+            //gl_Position = gl_Position + u_Translation;
+
+            traz_pra_origem = vPosition - u_Translation;
+
+            gira.x = c * traz_pra_origem.x - s * traz_pra_origem.y ;
+            gira.y =  c * traz_pra_origem.y + s * traz_pra_origem.x ;
+            gira.z = 0.0;
+            gira.w = 1.0;
+
+            gl_Position = gira + u_Translation;
+
+            vColor = aVertexColor;
+            //gl_Position.z = 0.0 ;
+            //gl_Position.w = 1.0 ;
+
+            //gl_Position = translacao_1 + gl_Position * (- translacao_1);
+
+            //gl_Position = gira;
+
+
+        }
+
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment" >
+
+        precision mediump float;
+        varying lowp vec4 vColor;
+
+
+        void
+        main()
+        {
+            gl_FragColor =  vColor;//vec4(0.0, 0.0, 1.0, 1.0); //fColor;
+        }
+    </script>
+
+    <script type="text/javascript" src="js/common/webgl-utils.js"></script>
+    <script type="text/javascript" src="js/common/initShaders.js"></script>
+    <script type="text/javascript" src="js/common/MV.js"></script>
+    <script type="text/javascript" src="js/quadrado.js"></script>
+</head>
+
+<body>
+<div style="float: left">
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</div>
+
+<div style="float: right">
+
+</div>
+</body>
+</html>

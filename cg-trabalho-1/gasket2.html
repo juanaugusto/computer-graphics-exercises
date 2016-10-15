@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>2D Sierpinski Gasket</title>
+
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery/jquery-1.12.4.js"></script>
+    <script src="js/jquery/jquery-ui.js"></script>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex" src="glsl/vertex_shader.glsl">
+        attribute vec4 vPosition;
+        uniform int theta;
+
+        void
+        main()
+        {
+            const float factor = 3.141592653589793238462643383/180.0;
+            float i_theta = float(theta);
+
+            float d = sqrt(vPosition.x*vPosition.x + vPosition.y*vPosition.y);
+            float s = sin( d*i_theta*factor );
+            float c = cos( d*i_theta*factor );
+
+
+            gl_Position.x = c * vPosition.x - s * vPosition.y;
+            gl_Position.y = s * vPosition.x + c * vPosition.y;
+            gl_Position.z = 0.0;
+            gl_Position.w = 1.0;
+
+
+        }
+
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment" src="glsl/fragment_shader.glsl">
+
+        precision mediump float;
+        uniform vec4 fColor;
+
+        void
+        main()
+        {
+            gl_FragColor = fColor;
+        }
+    </script>
+
+    <script type="text/javascript" src="js/common/webgl-utils.js"></script>
+    <script type="text/javascript" src="js/common/initShaders.js"></script>
+    <script type="text/javascript" src="js/common/MV.js"></script>
+    <script type="text/javascript" src="js/gasket2.js"></script>
+</head>
+
+<body>
+<div style="float: left">
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</div>
+
+<div style="float: right">
+
+    <p>
+        <label for="angulo">Ângulo (Twist):</label>
+        <input type="text" id="angulo" readonly style="border:0; color:#f6931f; font-weight:bold;">
+    </p>
+    <div style="width: 200px" id="slider_angulo"/>
+
+    <br />
+
+    <p>
+        <label for="num_subdivisoes">Número de subdivisões (Tesselation):</label>
+        <input type="text" id="num_subdivisoes" readonly style="border:0; color:#f6931f; font-weight:bold;">
+    </p>
+    <div style="width: 200px" id="slider_num_subdivisoes"/>
+
+
+
+</div>
+</body>
+</html>
