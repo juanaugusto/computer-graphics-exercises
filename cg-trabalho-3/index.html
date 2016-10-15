@@ -32,12 +32,6 @@
             float s = sentido_rot*sin( theta * factor);
             float c = cos( theta * factor);
 
-            //gl_Position.x = -s * vPosition.x + c * vPosition.y ;
-            //gl_Position.y =  s * vPosition.y + c * vPosition.x ;
-            //gl_Position.z = 0.0 ;
-            //gl_Position.w = 1.0 ;
-            //gl_Position = gl_Position + u_Translation;
-
             traz_pra_origem = vPosition - u_Translation;
 
             gira.x = c * traz_pra_origem.x - s * traz_pra_origem.y ;
@@ -48,13 +42,6 @@
             gl_Position = gira + u_Translation;
 
             vColor = aVertexColor;
-            //gl_Position.z = 0.0 ;
-            //gl_Position.w = 1.0 ;
-
-            //gl_Position = translacao_1 + gl_Position * (- translacao_1);
-
-            //gl_Position = gira;
-
 
         }
 
@@ -65,11 +52,10 @@
         precision mediump float;
         varying lowp vec4 vColor;
 
-
         void
         main()
         {
-            gl_FragColor =  vColor;//vec4(0.0, 0.0, 1.0, 1.0); //fColor;
+            gl_FragColor =  vColor;
         }
     </script>
 
