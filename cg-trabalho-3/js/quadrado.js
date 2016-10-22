@@ -3,7 +3,7 @@ var gl;
 var theta = 0.0;
 var thetaLoc;
 var requestId;
-var delay = 100;
+var delay = 30;
 
 var vColor;
 
@@ -26,27 +26,49 @@ var vertices;
 
 $(document).ready(function () {
 
+    //W (white) - 87 - sup dir
+    //B (blue) - 66 - inf esq
+    //R (red) - 82 - inf dir
+    //G (green) - 71 - sup esq
+
     $(document).keydown( function(event) {
 
         if(tecla_pressionada==false){
             tecla_pressionada = true;
 
-            if(sup_dir==true){
-                sup_dir = false;
-                sup_esq = true;
-            }else if(sup_esq==true){
-                sup_esq = false;
-                inf_esq = true;
+            switch (event.keyCode){
+                case 87:
+                    sup_dir = true;
+                    sup_esq = false;
+                    inf_esq = false;
+                    inf_dir = false;
 
-            }else if(inf_esq==true){
-                inf_esq = false;
-                inf_dir = true;
-            }else if(inf_dir==true){
-                inf_dir = false;
-                sup_dir = true;
+                    break;
+                case 66:
+                    inf_esq = true;
+                    sup_esq = false;
+                    sup_dir = false;
+                    inf_dir = false;
+
+                    break;
+                case 82:
+                    inf_dir = true;
+                    sup_esq = false;
+                    inf_esq = false;
+                    sup_dir = false;
+                    break;
+                case 71:
+                    sup_esq = true;
+                    sup_dir = false;
+                    inf_esq = false;
+                    inf_dir = false;
+                    break;
+                default:
+                    tecla_pressionada = false;
+                    break;
             }
-        }
 
+        }
 
     });
 
