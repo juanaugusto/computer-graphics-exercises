@@ -7,8 +7,8 @@ var points = [];
 var points_sem_centro = [];
 var points_com_um_centro = [];
 var fColor;
-const black = vec4(0.0, 0.0, 0.0, 1.0);
-const red = vec4(1.0, 0.0, 0.0, 1.0);
+const teal_color = vec4(0, 0.545, 0.545, 0.2);
+const dark_green_color = vec4(0, 0.392, 0, 1.0);
 
 $(document).ready(function () {
 
@@ -125,13 +125,13 @@ function render()
     //gl.clear( gl.COLOR_BUFFER_BIT |  gl.DEPTH_BUFFER_BIT);
     gl.clear( gl.COLOR_BUFFER_BIT);
 
-    gl.uniform4fv(fColor, flatten(black));
+    gl.uniform4fv(fColor, flatten(teal_color));
 
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points_com_um_centro), gl.STATIC_DRAW );
 
     gl.drawArrays( gl.TRIANGLE_FAN, 0, points_com_um_centro.length );
 
-    gl.uniform4fv(fColor, flatten(red));
+    gl.uniform4fv(fColor, flatten(dark_green_color));
 
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
 
