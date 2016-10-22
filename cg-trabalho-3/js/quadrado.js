@@ -26,38 +26,36 @@ var vertices;
 
 $(document).ready(function () {
 
-    //W (white) - 87 - sup dir
-    //B (blue) - 66 - inf esq
-    //R (red) - 82 - inf dir
-    //G (green) - 71 - sup esq
-
     $(document).keydown( function(event) {
+
+        var charCode = event.keyCode || event.which;
+        var charStr = String.fromCharCode(charCode);
 
         if(tecla_pressionada==false){
             tecla_pressionada = true;
 
-            switch (event.keyCode){
-                case 87:
+            switch (charStr.toLowerCase()){
+                case 'w'://87:
                     sup_dir = true;
                     sup_esq = false;
                     inf_esq = false;
                     inf_dir = false;
 
                     break;
-                case 66:
+                case 'b':
                     inf_esq = true;
                     sup_esq = false;
                     sup_dir = false;
                     inf_dir = false;
 
                     break;
-                case 82:
+                case 'r':
                     inf_dir = true;
                     sup_esq = false;
                     inf_esq = false;
                     sup_dir = false;
                     break;
-                case 71:
+                case 'g':
                     sup_esq = true;
                     sup_dir = false;
                     inf_esq = false;
