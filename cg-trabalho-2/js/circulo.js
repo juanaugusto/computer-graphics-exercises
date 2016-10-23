@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     $( "#num_divisoes" ).val($( "#slider_num_divisoes" ).slider( "value" ) );
 
-    var projMatrix = ortho(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
+    var projMatrix = ortho(-1.3, 1.3, -1.3, 1.3, -1.0, 1.0);
 
     canvas = document.getElementById( "gl-canvas" );
 

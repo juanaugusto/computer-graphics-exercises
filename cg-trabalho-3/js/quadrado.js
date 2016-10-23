@@ -23,6 +23,7 @@ var sentido_rot_vargl;
 var vertice_giro;
 
 var vertices;
+var lado_quadrado;
 
 $(document).ready(function () {
 
@@ -90,12 +91,12 @@ $(document).ready(function () {
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-
+    lado_quadrado = 2.0;
     vertices = [
-        vec2(0.7, 0.7),
-        vec2(0.7, -0.7),
-        vec2(-0.7, 0.7),
-        vec2(-0.7, -0.7)
+        vec2(lado_quadrado/2.0, lado_quadrado/2.0),
+        vec2(lado_quadrado/2.0, -lado_quadrado/2.0),
+        vec2(-lado_quadrado/2.0, lado_quadrado/2.0),
+        vec2(-lado_quadrado/2.0, -lado_quadrado/2.0)
     ];
 
     var bufferId = gl.createBuffer();
@@ -130,7 +131,7 @@ $(document).ready(function () {
     thetaLoc = gl.getUniformLocation(program, "theta");
     u_ProjMatrix = gl.getUniformLocation(program,'u_ProjMatrix');
 
-    vertice_giro = vec4(0.7,0.7,0.0,0.0);
+    vertice_giro = vec4(lado_quadrado/2.0, lado_quadrado/2.0, 0.0, 0.0);
     sentido_rot = 1.0;
 
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
@@ -162,16 +163,16 @@ function render() {
                 cancelAnimationFrame(requestId);
 
                 if(sup_dir){
-                    vertice_giro = vec4(0.7,0.7,0.0,0.0);
+                    vertice_giro = vec4(lado_quadrado/2.0,lado_quadrado/2.0,0.0,0.0);
                     sentido_rot = 1.0;
                 } else if(sup_esq){
-                    vertice_giro = vec4(-0.7,0.7,0.0,0.0);
+                    vertice_giro = vec4(-lado_quadrado/2.0,lado_quadrado/2.0,0.0,0.0);
                     sentido_rot = -1.0;
                 } else if(inf_esq){
-                    vertice_giro = vec4(-0.7,-0.7,0.0,0.0);
+                    vertice_giro = vec4(-lado_quadrado/2.0,-lado_quadrado/2.0,0.0,0.0);
                     sentido_rot = 1.0;
                 } else if(inf_dir){
-                    vertice_giro = vec4(0.7,-0.7,0.0,0.0);
+                    vertice_giro = vec4(lado_quadrado/2.0,-lado_quadrado/2.0,0.0,0.0);
                     sentido_rot = -1.0;
                 }
 

@@ -40,7 +40,9 @@
             gira.z = 0.0;
             gira.w = 1.0;
 
-            gl_Position = u_ProjMatrix*(gira + u_Translation);
+            gl_Position = gira + u_Translation;
+
+            gl_Position = u_ProjMatrix*gl_Position;
 
             vColor = aVertexColor;
 
