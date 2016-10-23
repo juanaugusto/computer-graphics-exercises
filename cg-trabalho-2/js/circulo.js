@@ -32,6 +32,8 @@ $(document).ready(function () {
 
     $( "#num_divisoes" ).val($( "#slider_num_divisoes" ).slider( "value" ) );
 
+    var projMatrix = ortho(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
+
     canvas = document.getElementById( "gl-canvas" );
 
 
@@ -67,6 +69,11 @@ $(document).ready(function () {
     gl.enableVertexAttribArray( vPosition );
 
     fColor = gl.getUniformLocation(program, "fColor");
+
+    u_ProjMatrix = gl.getUniformLocation(program,'u_ProjMatrix');
+
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
+
 
     render();
 

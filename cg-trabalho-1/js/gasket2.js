@@ -15,6 +15,8 @@ var NumTimesToSubdivide = 0;
 var fColor;
 const black = vec4(0.0, 0.0, 0.0, 1.0);
 const red = vec4(1.0, 0.0, 0.0, 1.0);
+var vertices;
+var u_ProjMatrix;
 
 window.onload = function init()
 {
@@ -44,11 +46,7 @@ window.onload = function init()
             $( "#num_subdivisoes" ).val( ui.value);
             NumTimesToSubdivide = ui.value;
             points = [];
-            var vertices = [
-                vec2( -0.5, -0.5 ),
-                vec2(  0,  0.5 ),
-                vec2(  0.5, -0.5 )
-            ];
+
 
             divideTriangle2( vertices[0], vertices[1], vertices[2], NumTimesToSubdivide);
 
@@ -65,6 +63,8 @@ window.onload = function init()
 
     $( "#num_subdivisoes" ).val($( "#slider_num_subdivisoes" ).slider( "value" ) );
 
+    var projMatrix = ortho(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
+
     canvas = document.getElementById( "gl-canvas" );
 
     gl = WebGLUtils.setupWebGL( canvas );
@@ -76,10 +76,10 @@ window.onload = function init()
 
     // First, initialize the corners of our gasket with three points.
 
-    var vertices = [
-        vec2( -0.5, -0.5 ),
-        vec2(  0,  0.5 ),
-        vec2(  0.5, -0.5 )
+    vertices = [
+        vec2( -1, -1 ),
+        vec2(  0,  1 ),
+        vec2(  1, -1 )
     ];
 
 
@@ -109,6 +109,9 @@ window.onload = function init()
 
     theta_varGL = gl.getUniformLocation( program, "theta" );
     fColor = gl.getUniformLocation(program, "fColor");
+    u_ProjMatrix = gl.getUniformLocation(program,'u_ProjMatrix');
+
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
 
     render();
 };

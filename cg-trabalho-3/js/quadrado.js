@@ -74,6 +74,7 @@ $(document).ready(function () {
 
     var canvas = document.getElementById("gl-canvas");
 
+    var projMatrix = ortho(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
 
     gl = WebGLUtils.setupWebGL(canvas);
 
@@ -127,9 +128,13 @@ $(document).ready(function () {
 
     vColor = gl.getUniformLocation(program, "vColor");
     thetaLoc = gl.getUniformLocation(program, "theta");
+    u_ProjMatrix = gl.getUniformLocation(program,'u_ProjMatrix');
 
     vertice_giro = vec4(0.7,0.7,0.0,0.0);
     sentido_rot = 1.0;
+
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
+
 
     render();
 

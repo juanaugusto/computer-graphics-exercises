@@ -13,11 +13,12 @@
     <script id="vertex-shader" type="x-shader/x-vertex" >
         attribute vec4 vPosition;
         uniform int theta;
+        uniform mat4 u_ProjMatrix;
 
         void
         main()
         {
-            gl_Position = vPosition;
+            gl_Position = u_ProjMatrix*vPosition;
             gl_PointSize = 5.0;
 
 

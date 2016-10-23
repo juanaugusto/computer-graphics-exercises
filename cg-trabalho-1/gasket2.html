@@ -13,6 +13,7 @@
     <script id="vertex-shader" type="x-shader/x-vertex" src="glsl/vertex_shader.glsl">
         attribute vec4 vPosition;
         uniform int theta;
+        uniform mat4 u_ProjMatrix;
 
         void
         main()
@@ -29,6 +30,8 @@
             gl_Position.y = s * vPosition.x + c * vPosition.y;
             gl_Position.z = 0.0;
             gl_Position.w = 1.0;
+
+            gl_Position = u_ProjMatrix*gl_Position;
 
 
         }
