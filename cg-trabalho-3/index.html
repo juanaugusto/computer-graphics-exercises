@@ -12,10 +12,6 @@
 
     <script id="vertex-shader" type="x-shader/x-vertex" >
         attribute vec4 vPosition;
-        uniform float theta;
-        uniform vec4 u_Translation;
-
-        uniform float sentido_rot;
 
         attribute vec4 aVertexColor;
 
@@ -26,23 +22,8 @@
         void
         main()
         {
-            vec4 traz_pra_origem;
-            vec4 gira;
-            const float factor = 3.141592653589793238462643383/180.0;
 
-            float s = sentido_rot*sin( theta * factor);
-            float c = cos( theta * factor);
-
-            traz_pra_origem = vPosition - u_Translation;
-
-            gira.x = c * traz_pra_origem.x - s * traz_pra_origem.y ;
-            gira.y =  c * traz_pra_origem.y + s * traz_pra_origem.x ;
-            gira.z = 0.0;
-            gira.w = 1.0;
-
-            gl_Position = gira + u_Translation;
-
-            gl_Position = u_ProjMatrix*gl_Position;
+            gl_Position = u_ProjMatrix*vPosition;
 
             vColor = aVertexColor;
 
@@ -76,6 +57,14 @@
 </div>
 
 <div style="float: right">
+    <div id=" instrucoes">
+        <p>Para girar em torno do vértice:</p>
+        <p> - azul, pressione B</p>
+        <p> - vermelho, pressione R</p>
+        <p> - branco, pressione W</p>
+        <p> - verde, pressione G</p>
+    </div>
+
     <div id="links">
 
         <a href="/">Link para TODOS os trabalhos</a>

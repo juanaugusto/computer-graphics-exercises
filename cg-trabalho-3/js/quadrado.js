@@ -11,10 +11,10 @@ var u_Translation;
 
 var tecla_pressionada = false;
 
-var sup_dir = true;
-var inf_dir = false;
-var sup_esq = false;
-var inf_esq = false;
+var white = true;
+var red = false;
+var green = false;
+var blue = false;
 
 var sentido_rot;
 
@@ -25,42 +25,49 @@ var vertice_giro;
 var vertices;
 var lado_quadrado;
 
+var vertices_origem;
+
+var v_blue, v_green, v_red, v_white;
+
+var bufferId;
+
+
 $(document).ready(function () {
 
-    $(document).keydown( function(event) {
+    $(document).keydown(function (event) {
 
         var charCode = event.keyCode || event.which;
         var charStr = String.fromCharCode(charCode);
 
-        if(tecla_pressionada==false){
+        if (tecla_pressionada == false) {
             tecla_pressionada = true;
 
-            switch (charStr.toLowerCase()){
+            switch (charStr.toLowerCase()) {
                 case 'w'://87:
-                    sup_dir = true;
-                    sup_esq = false;
-                    inf_esq = false;
-                    inf_dir = false;
+                    white = true;
+                    green = false;
+                    blue = false;
+                    red = false;
 
                     break;
                 case 'b':
-                    inf_esq = true;
-                    sup_esq = false;
-                    sup_dir = false;
-                    inf_dir = false;
+                    blue = true;
+                    green = false;
+                    white = false;
+                    red = false;
 
                     break;
                 case 'r':
-                    inf_dir = true;
-                    sup_esq = false;
-                    inf_esq = false;
-                    sup_dir = false;
+                    red = true;
+                    green = false;
+                    blue = false;
+                    white = false;
                     break;
                 case 'g':
-                    sup_esq = true;
-                    sup_dir = false;
-                    inf_esq = false;
-                    inf_dir = false;
+                    green = true;
+                    white = false;
+                    blue = false;
+                    red = false;
                     break;
                 default:
                     tecla_pressionada = false;
@@ -70,7 +77,6 @@ $(document).ready(function () {
         }
 
     });
-
 
 
     var canvas = document.getElementById("gl-canvas");
@@ -92,14 +98,22 @@ $(document).ready(function () {
     gl.useProgram(program);
 
     lado_quadrado = 2.0;
-    vertices = [
-        vec2(lado_quadrado/2.0, lado_quadrado/2.0),
-        vec2(lado_quadrado/2.0, -lado_quadrado/2.0),
-        vec2(-lado_quadrado/2.0, lado_quadrado/2.0),
-        vec2(-lado_quadrado/2.0, -lado_quadrado/2.0)
-    ];
 
-    var bufferId = gl.createBuffer();
+
+    v_white = vec2(lado_quadrado / 2.0, lado_quadrado / 2.0);
+    v_red = vec2(lado_quadrado / 2.0, -lado_quadrado / 2.0);
+
+    v_green = vec2(-lado_quadrado / 2.0, lado_quadrado / 2.0);
+
+    v_blue = vec2(-lado_quadrado / 2.0, -lado_quadrado / 2.0);
+
+    vertices = [
+        v_white,
+        v_red,
+        v_green,
+        v_blue];
+
+    bufferId = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
@@ -109,10 +123,10 @@ $(document).ready(function () {
     gl.enableVertexAttribArray(vPosition);
 
     var colors = [
-        vec4(1.0,  1.0,  1.0,  1.0),    // branco
-        vec4(1.0,  0.0,  0.0,  1.0),    // vermelho
-        vec4(0.0,  1.0,  0.0,  1.0),    // verde
-        vec4(0.0,  0.0,  1.0,  1.0)    // azul
+        vec4(1.0, 1.0, 1.0, 1.0),    // branco
+        vec4(1.0, 0.0, 0.0, 1.0),    // vermelho
+        vec4(0.0, 1.0, 0.0, 1.0),    // verde
+        vec4(0.0, 0.0, 1.0, 1.0)    // azul
     ];
 
     var squareVerticesColorBuffer = gl.createBuffer();
@@ -129,18 +143,30 @@ $(document).ready(function () {
 
     vColor = gl.getUniformLocation(program, "vColor");
     thetaLoc = gl.getUniformLocation(program, "theta");
-    u_ProjMatrix = gl.getUniformLocation(program,'u_ProjMatrix');
+    u_ProjMatrix = gl.getUniformLocation(program, 'u_ProjMatrix');
 
-    vertice_giro = vec4(lado_quadrado/2.0, lado_quadrado/2.0, 0.0, 0.0);
+    vertice_giro = vec2(lado_quadrado / 2.0, lado_quadrado / 2.0);
     sentido_rot = 1.0;
 
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
-
 
     render();
 
 });
 
+function gira_em_torno_vertice(v_giro, point, angulo) {
+    var factor = Math.PI / 180.0;
+
+    var s = 1.0 * Math.sin(angulo * factor);
+    var c = Math.cos(angulo * factor);
+
+    var traz_pra_origem = subtract(point, v_giro);
+
+    var gira = vec2(c * traz_pra_origem[0] - s * traz_pra_origem[1], c * traz_pra_origem[1] + s * traz_pra_origem[0]);
+
+    return add(gira, v_giro);
+
+}
 
 function render() {
 
@@ -148,38 +174,46 @@ function render() {
 
     theta += 5;
 
-    gl.uniform1f(thetaLoc, theta);
-    gl.uniform1f(sentido_rot_vargl, sentido_rot);
-    gl.uniform4fv(u_Translation, vertice_giro);
+    vertices = [
+        gira_em_torno_vertice(vertice_giro, v_white, theta),
+        gira_em_torno_vertice(vertice_giro, v_red, theta),
+        gira_em_torno_vertice(vertice_giro, v_green, theta),
+        gira_em_torno_vertice(vertice_giro, v_blue, theta)
+    ];
+
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     setTimeout(
         function () {
 
-            if(theta==360 && tecla_pressionada){
+            if (tecla_pressionada) {
                 theta = 0.0;
                 tecla_pressionada = false;
                 cancelAnimationFrame(requestId);
 
-                if(sup_dir){
-                    vertice_giro = vec4(lado_quadrado/2.0,lado_quadrado/2.0,0.0,0.0);
-                    sentido_rot = 1.0;
-                } else if(sup_esq){
-                    vertice_giro = vec4(-lado_quadrado/2.0,lado_quadrado/2.0,0.0,0.0);
-                    sentido_rot = -1.0;
-                } else if(inf_esq){
-                    vertice_giro = vec4(-lado_quadrado/2.0,-lado_quadrado/2.0,0.0,0.0);
-                    sentido_rot = 1.0;
-                } else if(inf_dir){
-                    vertice_giro = vec4(lado_quadrado/2.0,-lado_quadrado/2.0,0.0,0.0);
-                    sentido_rot = -1.0;
+                if (white) {
+                    vertice_giro = vertices[0];
+                } else if (green) {
+                    vertice_giro = vertices[2];
+                } else if (blue) {
+                    vertice_giro = vertices[3];
+                } else if (red) {
+                    vertice_giro = vertices[1];
                 }
+
+                v_white = vertices[0];
+                v_green = vertices[2];
+                v_blue = vertices[3];
+                v_red = vertices[1];
 
                 requestId = requestAnimFrame(render);
 
-            }else{
-                if(theta==360){
+            } else {
+                if (theta == 360) {
                     theta = 0.0;
                 }
                 requestId = requestAnimFrame(render);
