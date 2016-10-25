@@ -1,13 +1,8 @@
 var gl;
 
 var theta = 0.0;
-var thetaLoc;
 var requestId;
 var delay = 30;
-
-var vColor;
-
-var u_Translation;
 
 var tecla_pressionada = false;
 
@@ -16,21 +11,16 @@ var red = false;
 var green = false;
 var blue = false;
 
-var sentido_rot;
-
-var sentido_rot_vargl;
-
 var vertice_giro;
 
 var vertices;
 var lado_quadrado;
 
-var vertices_origem;
+var squareVerticesColorBuffer;
 
 var v_blue, v_green, v_red, v_white;
 
 var bufferId;
-
 
 $(document).ready(function () {
 
@@ -90,7 +80,6 @@ $(document).ready(function () {
     }
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    //gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
     gl.clearColor(0.4, 0.4, 0.75, 0.6);
 
@@ -102,9 +91,7 @@ $(document).ready(function () {
 
     v_white = vec2(lado_quadrado / 2.0, lado_quadrado / 2.0);
     v_red = vec2(lado_quadrado / 2.0, -lado_quadrado / 2.0);
-
     v_green = vec2(-lado_quadrado / 2.0, lado_quadrado / 2.0);
-
     v_blue = vec2(-lado_quadrado / 2.0, -lado_quadrado / 2.0);
 
     vertices = [
@@ -117,7 +104,7 @@ $(document).ready(function () {
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
-    // Associate out shader variables with our data buffer
+    // Associate shader vertex variable with data buffer
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
@@ -129,24 +116,18 @@ $(document).ready(function () {
         vec4(0.0, 0.0, 1.0, 1.0)    // azul
     ];
 
-    var squareVerticesColorBuffer = gl.createBuffer();
+    squareVerticesColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
-    // Associate out shader variables with our data buffer
+    // Associate shader color variable with data buffer
     var vertexColorAttribute = gl.getAttribLocation(program, "aVertexColor");
     gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vertexColorAttribute);
 
-    u_Translation = gl.getUniformLocation(program, "u_Translation");
-    sentido_rot_vargl = gl.getUniformLocation(program, "sentido_rot");
-
-    vColor = gl.getUniformLocation(program, "vColor");
-    thetaLoc = gl.getUniformLocation(program, "theta");
     u_ProjMatrix = gl.getUniformLocation(program, 'u_ProjMatrix');
 
     vertice_giro = vec2(lado_quadrado / 2.0, lado_quadrado / 2.0);
-    sentido_rot = 1.0;
 
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
 
@@ -180,7 +161,6 @@ function render() {
         gira_em_torno_vertice(vertice_giro, v_green, theta),
         gira_em_torno_vertice(vertice_giro, v_blue, theta)
     ];
-
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
