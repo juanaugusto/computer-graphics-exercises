@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Cubo</title>
+
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery/jquery-1.12.4.js"></script>
+    <script src="js/jquery/jquery-ui.js"></script>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex" >
+
+        attribute vec4 a_vertice_eixo;
+        uniform mat4 u_proj_matrix;
+
+        void
+        main()
+        {
+
+            gl_Position = u_proj_matrix*a_vertice_eixo;
+
+        }
+
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment" >
+
+        precision mediump float;
+
+        void
+        main()
+
+        {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    </script>
+
+    <script type="text/javascript" src="js/common/webgl-utils.js"></script>
+    <script type="text/javascript" src="js/common/initShaders.js"></script>
+    <script type="text/javascript" src="js/common/MV.js"></script>
+    <script type="text/javascript" src="js/cubo.js"></script>
+</head>
+
+<body>
+<div style="float: left">
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</div>
+
+<div style="float: right">
+
+
+    <div id="links">
+
+        <a href="/">Link para TODOS os trabalhos</a>
+
+    </div>
+</div>
+</body>
+</html>
