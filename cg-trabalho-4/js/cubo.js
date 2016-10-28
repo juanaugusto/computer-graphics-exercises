@@ -22,13 +22,20 @@ $(document).ready(function () {
 
     var eixos = [
         vec3(0.0, 0.0, 0.0),
-        vec3(3.0, 0.0, 0.0), // eixo X
+        vec3(2.0, 0.0, 0.0), // eixo X
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 3.0, 0.0), // eixo Y
+        vec3(0.0, 2.0, 0.0), // eixo Y
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 3.0) // eixo Z
+        vec3(0.0, 0.0, 2.0) // eixo Z
 
     ];
+
+
+    var eye = vec3();
+    var at = vec3();
+    var up = vec3();
+    var view_matrix = lookAt( eye, at, up );
+
 
     var buffer_eixos = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer_eixos);
@@ -47,6 +54,9 @@ $(document).ready(function () {
     for(i = 0; i<eixos.length; i=i+2){
         gl.drawArrays(gl.LINES, i, 2);
     }
+
+    gl.drawArrays(gl.LINES, 4, 2);
+
 
 
 });
