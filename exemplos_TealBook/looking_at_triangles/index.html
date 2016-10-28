@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Cubo</title>
+
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery/jquery-1.12.4.js"></script>
+    <script src="js/jquery/jquery-ui.js"></script>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex" >
+
+
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        uniform mat4 u_ViewMatrix;
+        varying vec4 v_Color;
+
+        void
+        main()
+        {
+            gl_Position = u_ViewMatrix * a_Position;
+            v_Color = a_Color;
+
+        }
+
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment" >
+
+        precision mediump float;
+        varying vec4 v_Color;
+        void
+        main()
+
+        {
+            gl_FragColor = v_Color;
+        }
+    </script>
+
+    <script type="text/javascript" src="js/common/webgl-utils.js"></script>
+    <script type="text/javascript" src="js/common/initShaders.js"></script>
+    <script type="text/javascript" src="js/common/MV.js"></script>
+    <script type="text/javascript" src="js/triangulo.js"></script>
+</head>
+
+<body>
+<div style="float: left">
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</div>
+
+<div style="float: right">
+
+
+    <div id="sliders">
+    <div id="sliders_eye">
+        <p>
+            <label for="eye_x">Eye X:</label>
+            <input type="text" id="eye_x" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_eye_x"></div>
+        <br/>
+        <p>
+            <label for="eye_y">Eye Y:</label>
+            <input type="text" id="eye_y" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_eye_y"></div>
+        <br />
+        <p>
+            <label for="eye_z">Eye Z:</label>
+            <input type="text" id="eye_z" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_eye_z"></div>
+
+    </div>
+    <div id="sliders_look_at">
+        <p>
+            <label for="look_at_x">Look At X:</label>
+            <input type="text" id="look_at_x" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_look_at_x"></div>
+        <br/>
+        <p>
+            <label for="look_at_y">Look At Y:</label>
+            <input type="text" id="look_at_y" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_look_at_y"></div>
+        <br />
+        <p>
+            <label for="look_at_z">Look At Z:</label>
+            <input type="text" id="look_at_z" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_look_at_z"></div>
+
+    </div>
+    <div id="sliders_up">
+        <p>
+            <label for="up_x">Up X:</label>
+            <input type="text" id="up_x" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_up_x"></div>
+        <br/>
+        <p>
+            <label for="up_y">Up Y:</label>
+            <input type="text" id="up_y" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_up_y"></div>
+        <br />
+        <p>
+            <label for="up_z">Up Z:</label>
+            <input type="text" id="up_z" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        </p>
+        <div style="width: 200px" id="slider_up_z"></div>
+
+
+    </div>
+    </div>
+
+
+    <br/>
+
+    <div id="links">
+
+        <a href="/">Link para TODOS os trabalhos</a>
+
+    </div>
+</div>
+</body>
+</html>
