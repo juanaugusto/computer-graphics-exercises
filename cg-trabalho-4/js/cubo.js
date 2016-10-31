@@ -1,67 +1,250 @@
 
-$(document).ready(function () {
+var canvas;
+var gl;
 
-    var canvas = document.getElementById("gl-canvas");
+var NumVertices  = 36;
 
-    var proj_matrix = ortho(-3.0, 3.0, -3.0, 3.0, -3.0, 3.0);
+var points = [];
+var colors = [];
 
-    var gl = WebGLUtils.setupWebGL(canvas);
+var xAxis = 0;
+var yAxis = 1;
+var zAxis = 2;
 
-    if (!gl) {
-        alert("WebGL isn't available");
-    }
+var axis = 0;
+var theta = [ 0, 0, 0 ];
 
-    gl.viewport(0, 0, canvas.width, canvas.height);
+var eixos;
 
-    gl.clearColor(0.4, 0.4, 0.75, 0.6);
+var thetaLoc;
 
-    gl.clear(gl.COLOR_BUFFER_BIT);
+var cBuffer, vBuffer;
+var u_TipoDesenho;
 
-    var program = initShaders(gl, "vertex-shader", "fragment-shader");
-    gl.useProgram(program);
+var retas_paralelas_ao_cubo, cores_das_retas_paralelas;
+var u_ViewMatrix;
+var u_ProjMatrix;
+var projMatrix;
 
-    var eixos = [
+window.onload = function init()
+{
+    canvas = document.getElementById( "gl-canvas" );
+
+    gl = WebGLUtils.setupWebGL( canvas );
+    if ( !gl ) { alert( "WebGL isn't available" ); }
+
+    colorCube();
+
+    gl.viewport( 0, 0, canvas.width, canvas.height );
+    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+
+    gl.enable(gl.DEPTH_TEST);
+
+    //
+    //  Load shaders and initialize attribute buffers
+    //
+    var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+    gl.useProgram( program );
+
+    cBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+
+    var vColor = gl.getAttribLocation( program, "vColor" );
+    gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vColor );
+
+    vBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+
+
+    var vPosition = gl.getAttribLocation( program, "vPosition" );
+    gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vPosition );
+
+    thetaLoc = gl.getUniformLocation(program, "theta");
+    u_TipoDesenho = gl.getUniformLocation(program, "u_TipoDesenho");
+    u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
+    u_ProjMatrix = gl.getUniformLocation(program, "u_ProjMatrix");
+
+    projMatrix = ortho(-2, 2, -2, 2, -2, 2 );
+
+    var eye = vec3(0.20,0.25,0.25);
+    var at = vec3(0.0,0.0,0.0);
+    var up = vec3(0.0,1.0,0.0);
+    gl.uniformMatrix4fv(u_ViewMatrix, false, flatten(lookAt(eye, at, up)));
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
+
+
+    //event listeners for buttons
+
+    document.getElementById( "xButton" ).onclick = function () {
+        $( "#eixo" ).val("Girando em torno do eixo X");
+        axis = xAxis;
+    };
+    document.getElementById( "yButton" ).onclick = function () {
+        $( "#eixo" ).val("Girando em torno do eixo Y");
+        axis = yAxis;
+    };
+    document.getElementById( "zButton" ).onclick = function () {
+        $( "#eixo" ).val("Girando em torno do eixo Z");
+        axis = zAxis;
+    };
+
+    $('#radio-1').change(function() {
+        projMatrix = ortho(-2, 2, -2, 2, -2, 2 );
+    });
+    $('#radio-2').change(function() {
+        projMatrix = perspective( 180.0, 1.0, -1.0, 100.0 );
+    });
+
+
+
+    $( "#eixo" ).val("Girando em torno do eixo X");
+
+    eixos = [
         vec3(0.0, 0.0, 0.0),
-        vec3(2.0, 0.0, 0.0), // eixo X
+        vec3(0.0, 10.0, 0.0),
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 2.0, 0.0), // eixo Y
+        vec3(10.0, 0.0, 0.0),
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 2.0) // eixo Z
+        vec3(0.0, 0.0, 10.0)
+    ];
+
+    cores_dos_eixos = [
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
+    ];
+
+    retas_paralelas_ao_cubo = [
+        vec3(-0.7, -0.5, 10.0),
+        vec3(-0.7, -0.5, -10.0),
+        vec3(0.7, -0.5, 10.0),
+        vec3(0.7, -0.5, -10.0)
 
     ];
 
+    cores_das_retas_paralelas = [
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
+    ];
 
-    var eye = vec3();
-    var at = vec3();
-    var up = vec3();
-    var view_matrix = lookAt( eye, at, up );
+    render();
+}
 
+function colorCube()
+{
+    quad( 1, 0, 3, 2 );
+    quad( 2, 3, 7, 6 );
+    quad( 3, 0, 4, 7 );
+    quad( 6, 5, 1, 2 );
+    quad( 4, 5, 6, 7 );
+    quad( 5, 4, 0, 1 );
+}
 
-    var buffer_eixos = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer_eixos);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(eixos), gl.STATIC_DRAW);
+function quad(a, b, c, d)
+{
+    var vertices = [
+        vec3( -0.5, -0.5,  0.5 ),
+        vec3( -0.5,  0.5,  0.5 ),
+        vec3(  0.5,  0.5,  0.5 ),
+        vec3(  0.5, -0.5,  0.5 ),
+        vec3( -0.5, -0.5, -0.5 ),
+        vec3( -0.5,  0.5, -0.5 ),
+        vec3(  0.5,  0.5, -0.5 ),
+        vec3(  0.5, -0.5, -0.5 )
+    ];
 
-    // Associate shader vertex variable with data buffer
-    var a_vertice_eixo = gl.getAttribLocation(program, "a_vertice_eixo");
-    gl.vertexAttribPointer(a_vertice_eixo, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(a_vertice_eixo);
+    var vertexColors = [
+        [ 0.0, 0.0, 0.0, 1.0 ],  // black
+        [ 1.0, 0.0, 0.0, 1.0 ],  // red
+        [ 1.0, 1.0, 0.0, 1.0 ],  // yellow
+        [ 0.0, 1.0, 0.0, 1.0 ],  // green
+        [ 0.0, 0.0, 1.0, 1.0 ],  // blue
+        [ 1.0, 0.0, 1.0, 1.0 ],  // magenta
+        [ 0.0, 1.0, 1.0, 1.0 ],  // cyan
+        [ 1.0, 1.0, 1.0, 1.0 ]   // white
+    ];
 
+    // We need to parition the quad into two triangles in order for
+    // WebGL to be able to render it.  In this case, we create two
+    // triangles from the quad indices
 
-    var u_proj_matrix = gl.getUniformLocation(program, "u_proj_matrix");
-    gl.uniformMatrix4fv(u_proj_matrix, false, flatten(proj_matrix));
+    //vertex color assigned by the index of the vertex
 
-    var i;
-    for(i = 0; i<eixos.length; i=i+2){
-        gl.drawArrays(gl.LINES, i, 2);
+    var indices = [ a, b, c, a, c, d ];
+
+    for ( var i = 0; i < indices.length; ++i ) {
+        points.push( vertices[indices[i]] );
+        //colors.push( vertexColors[indices[i]] );
+
+        // for solid colored faces use
+        colors.push(vertexColors[a]);
+
+    }
+}
+
+function render()
+{
+    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    theta[axis] += 2.0;
+
+    if(theta[axis]==360.0){
+        theta[axis] = 0.0;
     }
 
-    gl.drawArrays(gl.LINES, 4, 2);
+    /*theta[yAxis] = 224;
+    theta[zAxis] = 58;
+    TODO Verificar possível problema com esses caras fixos
+    */
+
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
+
+    gl.uniform3fv(thetaLoc, theta);
+
+    gl.uniform1i(u_TipoDesenho, 0);
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(cores_dos_eixos), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(eixos), gl.STATIC_DRAW );
+
+    for(var i = 0; i<cores_dos_eixos.length; i=i+2){
+        gl.drawArrays( gl.LINES, i, 2 );
+    }
 
 
+    gl.uniform1i(u_TipoDesenho, 1);
 
-});
+    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+
+    gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 
 
+    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(cores_das_retas_paralelas), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(retas_paralelas_ao_cubo), gl.STATIC_DRAW );
 
 
+    for(i = 0; i<cores_das_retas_paralelas.length; i=i+2){
+       // gl.drawArrays( gl.LINES, i, 2 );
+    }
 
+
+    requestAnimFrame( render );
+}

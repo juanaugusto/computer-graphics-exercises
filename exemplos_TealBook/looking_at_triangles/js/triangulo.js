@@ -13,7 +13,7 @@ $(document).ready(function () {
 
     gl.viewport(0, 0, canvas.width, canvas.height);
 
-    gl.clearColor(0.4, 0.4, 0.75, 0.6);
+    gl.clearColor(0.05, 0.05, 0.05, 0.2);
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -22,48 +22,46 @@ $(document).ready(function () {
 
     var eixos = [
         vec3(0.0, 0.0, 0.0),
-        vec3(2.0, 0.0, 0.0), // eixo X
+        vec3(1.0, 0.0, 0.0), // eixo X
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 2.0, 0.0), // eixo Y
+        vec3(0.0, 1.0, 0.0), // eixo Y
         vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 2.0), // eixo Z
+        vec3(0.0, 0.0, 1.0) // eixo Z
 
     ];
 
     var cores_dos_eixos = [
-        vec3(0.345, 0.094, 0.271),
-        vec3(0.345, 0.094, 0.271),
-        vec3(0.345, 0.094, 0.271),
-        vec3(0.345, 0.094, 0.271),
-        vec3(0.345, 0.094, 0.271),
-        vec3(0.345, 0.094, 0.271),
+        vec3(0, 0, 0),
+        vec3(0, 0, 0),
+        vec3(0, 0, 0),
+        vec3(0, 0, 0),
+        vec3(0, 0, 0),
+        vec3(0, 0, 0)
     ];
 
 
     var vertices = [
 
-        vec3(0.0, 0.5, -0.4),       // triangulo verde de trás
-        vec3(-0.5, -0.5, -0.4),
-        vec3(0.5, -0.5, -0.4),
-        vec3(0.5, 0.4, -0.2),      // triangulo amarelo do meio
-        vec3(-0.5, 0.4, -0.2),
-        vec3(0.0, -0.6, -0.2),
-        vec3(0.0, 0.5, 0.0),       // triangulo azul da frente
-        vec3(-0.5, -0.5, 0.0),
-        vec3(0.5, -0.5, 0.0)
+        vec3(1.0,1.0,1.0),
+        vec3(-1.0,1.0,1.0),
+        vec3(-1.0,-1.0,1.0),
+        vec3(1.0,-1.0,1.0),
+        vec3(1.0,-1.0,-1.0),
+        vec3(1.0,1.0,-1.0),
+        vec3(-1.0,1.0,-1.0),
+        vec3(-1.0,-1.0,-1.0)
 
     ];
 
     var cores_dos_vertices = [
-        vec4(0.4, 1.0, 0.4, 0.3),     // cor do triangulo de trás
-        vec4(0.4, 1.0, 0.4, 0.3),
-        vec4(1.0, 0.4, 0.4, 0.3),
-        vec4(1.0, 0.4, 0.4, 0.3),    // cor do triangulo do meio
-        vec4(1.0, 1.0, 0.4, 0.3),
-        vec4(1.0, 1.0, 0.4, 0.3),
-        vec4(0.4, 0.4, 1.0, 0.3),    // cor do triangulo da frente
-        vec4(0.4, 0.4, 1.0, 0.3),
-        vec4(1.0, 0.4, 0.4, 0.3)
+        vec3(1.0,1.0,1.0),
+        vec3(1.0,0.0,1.0),
+        vec3(1.0,0.0,0.0),
+        vec3(1.0,1.0,0.0),
+        vec3(0.0,1.0,0.0),
+        vec3(0.0,1.0,1.0),
+        vec3(0.0,0.0,1.0),
+        vec3(0.0,0.0,0.0)
     ];
 
 
@@ -89,7 +87,6 @@ $(document).ready(function () {
     var u_view_matrix = gl.getUniformLocation(program,"u_ViewMatrix");
 
 
-
     var eye = vec3(0.0, 0.0, 0.0);
     var at = vec3(0.0, 0.0, 0.0);
     var up = vec3(0.0, 1.0, 0.0);
@@ -97,7 +94,7 @@ $(document).ready(function () {
 
     gl.uniformMatrix4fv(u_view_matrix, false, flatten(view_matrix));
 
-    gl.drawArrays(gl.TRIANGLES, 0, 9);
+    render( gl, u_view_matrix, lookAt( eye, at, up ));
 
 
     $( "#slider_eye_x" ).slider({
@@ -244,13 +241,13 @@ $(document).ready(function () {
         }
 
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer_colors);
+        /*gl.bindBuffer(gl.ARRAY_BUFFER, buffer_colors);
         gl.bufferData(gl.ARRAY_BUFFER, flatten(cores_dos_vertices), gl.STATIC_DRAW);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer_points);
         gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
-        gl.drawArrays(gl.TRIANGLES, 0, 9);
+        gl.drawArrays(gl.TRIANGLES, 0, 9);*/
     }
 
 
