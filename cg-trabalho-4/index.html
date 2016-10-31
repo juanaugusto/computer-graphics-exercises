@@ -46,10 +46,10 @@
 
             fColor = vColor;
             if(u_TipoDesenho==0){
-                gl_Position =  u_ProjMatrix/*u_ViewMatrix*/*vPosition;
+                gl_Position =  u_ProjMatrix*u_ViewMatrix*vPosition;
             }
             else if(u_TipoDesenho==1){
-                gl_Position = u_ProjMatrix/*u_ViewMatrix*/*rz * ry * rx *  vPosition;
+                gl_Position = u_ProjMatrix*u_ViewMatrix*rz * ry * rx *  vPosition;
             }
         }
     </script>

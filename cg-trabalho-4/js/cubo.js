@@ -203,7 +203,10 @@ function render()
 
     /*theta[yAxis] = 224;
     theta[zAxis] = 58;
-    TODO Verificar possível problema com esses caras fixos
+
+     // TODO Verificar possível problema com esses caras fixos
+
+     // [x variando, 266, 286] - tb com problema
     */
 
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
