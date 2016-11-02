@@ -15,39 +15,14 @@
         uniform mat4 u_ViewMatrix;
         uniform mat4 u_ProjMatrix;
         uniform mat4 u_RotateMatrix;
-        uniform vec3 u_Alfa;
         attribute  vec4 vPosition;
         attribute  vec4 vColor;
         varying vec4 fColor;
 
         uniform float theta;
-        float determinant(in mat2 m) ;
-        mat2 inversex(in mat2 m);
-        mat4 inverseb(in mat4 m);
 
         void main()
         {
-            float angle = radians(theta);
-
-            float d = sqrt(u_Alfa.y*u_Alfa.y+u_Alfa.z*u_Alfa.z);
-
-            // Remeber: thse matrices are column-major
-            mat4 rx = mat4( 1.0,  0.0,  0.0, 0.0,
-                    0.0,  u_Alfa.z/d,  -u_Alfa.y/d, 0.0,
-                    0.0, u_Alfa.y/d,  u_Alfa.z/d, 0.0,
-                    0.0,  0.0,  0.0, 1.0 );
-
-            mat4 ry = mat4( d, 0.0, -u_Alfa.x, 0.0,
-                    0.0, 1.0,  0.0, 0.0,
-                    u_Alfa.x, 0.0,  d, 0.0,
-                    0.0, 0.0,  0.0, 1.0 );
-
-
-            mat4 rz = mat4( cos(angle), -sin(angle), 0.0, 0.0,
-                    sin(angle),  cos(angle), 0.0, 0.0,
-                    0.0,  0.0, 1.0, 0.0,
-                    0.0,  0.0, 0.0, 1.0 );
-
             fColor = vColor;
             if(u_TipoDesenho==0){
                 gl_Position =  u_ProjMatrix*u_ViewMatrix*vPosition;
@@ -57,30 +32,7 @@
             }
         }
 
-        float determinant(mat2 m) {
-            return m[0][0]*m[1][1] - m[1][0]*m[0][1] ;
-        }
 
-        mat2 inversex(mat2 m) {
-            float d = 1.0 / determinant(m) ;
-            return d * mat2( m[1][1], -m[0][1], -m[1][0], m[0][0]) ;
-        }
-
-        mat4 inverseb(mat4 m) {
-            mat2 a = inversex(mat2(m));
-            mat2 b = mat2(m[2].xy,m[3].xy);
-            mat2 c = mat2(m[0].zw,m[1].zw);
-            mat2 d = mat2(m[2].zw,m[3].zw);
-
-            mat2 t = c*a;
-            mat2 h = inversex(d - t*b);
-            mat2 g = - h*t;
-            mat2 f = - a*b*h;
-            mat2 e = a - f*t;
-
-            return mat4( vec4(e[0],g[0]), vec4(e[1],g[1]),
-                          vec4(f[0],h[0]), vec4(f[1],f[1]) );
-        }
     </script>
 
 
@@ -114,11 +66,11 @@
 
     <br/>
 
-    <button id= "xButton">Rotate X</button>
-    <button id= "yButton">Rotate Y</button>
-    <button id= "zButton">Rotate Z</button>
+    <button class="ui-button ui-widget ui-corner-all" id= "xButton">Rotate X</button>
+    <button class="ui-button ui-widget ui-corner-all" id= "yButton">Rotate Y</button>
+    <button class="ui-button ui-widget ui-corner-all" id= "zButton">Rotate Z</button>
 
-    <button id="eixoArbitButton" onclick="openDialog()" >Eixo Arbitrário</button>
+    <button class="ui-button ui-widget ui-corner-all" id="eixoArbitButton" onclick="openDialog()" >Eixo Arbitrário</button>
 
     <fieldset>
         <legend>Select o tipo de Projeção: </legend>
@@ -140,12 +92,8 @@
         <input type="text" id="eixo" readonly style="width: 350px; border:0; color:#f6931f; font-weight:bold;">
     </div>
 
-
-
     <div id="links">
-
         <a href="/">Link para TODOS os trabalhos</a>
-
     </div>
 </div>
 
@@ -159,7 +107,6 @@
         <label for="valorz">Valor do Eixo Z</label>
         <input type="number" id="valorz" class="text ui-widget-content ui-corner-all">
 
-        <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <button id="confirmaEixoArbit" onclick="confirmaEixoArbit()" >Ok</button>
     </fieldset>
 
