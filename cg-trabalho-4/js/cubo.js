@@ -12,9 +12,12 @@ var yAxis = 1;
 var zAxis = 2;
 
 var axis = 0;
-var theta = [ 0, 0, 0 ];
+var theta = 0;
 
 var eixos;
+
+var eixo_arbitrario;
+var is_eixo_arbitrario = false;
 
 var thetaLoc;
 
@@ -24,7 +27,37 @@ var u_TipoDesenho;
 var retas_paralelas_ao_cubo, cores_das_retas_paralelas;
 var u_ViewMatrix;
 var u_ProjMatrix;
+var u_RotateMatrix;
 var projMatrix;
+var rotateMatrix;
+var v;
+var alfa;
+var u_Alfa;
+var matrix_position;
+
+
+function rotacao_do_cubo_por_eixo_arbitrario(u_Alfa, theta){
+    var angle = radians(theta);
+
+    var d = Math.sqrt(Math.pow(u_Alfa[1],2)+Math.pow(u_Alfa[2],2));
+    var rx = mat4( 1.0,  0.0,  0.0, 0.0,
+        0.0,  u_Alfa[2]/d,  -u_Alfa[1]/d, 0.0,
+        0.0, u_Alfa[1]/d,  u_Alfa[2]/d, 0.0,
+        0.0,  0.0,  0.0, 1.0 );
+
+    var ry = mat4( d, 0.0, -u_Alfa[0], 0.0,
+        0.0, 1.0,  0.0, 0.0,
+        u_Alfa[0], 0.0,  d, 0.0,
+        0.0, 0.0,  0.0, 1.0 );
+
+
+    var rz = mat4( Math.cos(angle), -Math.sin(angle), 0.0, 0.0,
+        Math.sin(angle),  Math.cos(angle), 0.0, 0.0,
+        0.0,  0.0, 1.0, 0.0,
+        0.0,  0.0, 0.0, 1.0 );
+
+    return mult(mult(mult(mult(inverse(rx),inverse(ry)),rz),ry),rx);
+}
 
 window.onload = function init()
 {
@@ -67,13 +100,15 @@ window.onload = function init()
     u_TipoDesenho = gl.getUniformLocation(program, "u_TipoDesenho");
     u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
     u_ProjMatrix = gl.getUniformLocation(program, "u_ProjMatrix");
+    u_RotateMatrix = gl.getUniformLocation(program, "u_RotateMatrix");
+    u_Alfa = gl.getUniformLocation(program, "u_Alfa");
 
     projMatrix = ortho(-2, 2, -2, 2, -2, 2 );
 
-    var eye = vec3(0.20,0.25,0.25);
+    /*var eye = vec3(0.20,0.25,0.25);
     var at = vec3(0.0,0.0,0.0);
-    var up = vec3(0.0,1.0,0.0);
-    gl.uniformMatrix4fv(u_ViewMatrix, false, flatten(lookAt(eye, at, up)));
+    var up = vec3(0.0,1.0,0.0);*/
+    gl.uniformMatrix4fv(u_ViewMatrix, false, flatten(lookAt(vec3(0.20,0.25,0.25), vec3(0.0,0.0,0.0), vec3(0.0,1.0,0.0))));
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
 
 
@@ -82,21 +117,47 @@ window.onload = function init()
     document.getElementById( "xButton" ).onclick = function () {
         $( "#eixo" ).val("Girando em torno do eixo X");
         axis = xAxis;
+        is_eixo_arbitrario = false;
     };
     document.getElementById( "yButton" ).onclick = function () {
         $( "#eixo" ).val("Girando em torno do eixo Y");
         axis = yAxis;
+        is_eixo_arbitrario = false;
+
+
     };
     document.getElementById( "zButton" ).onclick = function () {
         $( "#eixo" ).val("Girando em torno do eixo Z");
         axis = zAxis;
+        is_eixo_arbitrario = false;
+
     };
+
+    document.getElementById( "confirmaEixoArbit" ).onclick = function () {
+
+        is_eixo_arbitrario = true;
+        closeDialog();
+        eixo_arbitrario = vec3(parseFloat($("#valorx").val()),parseFloat($("#valory").val()), parseFloat($("#valorz").val()));
+        $( "#eixo" ).val("Girando em torno do eixo arbitrário "+eixo_arbitrario);
+
+        alfa = normalize(eixo_arbitrario);
+
+        matrix_position = mult(mult(rotate(Math.acos(alfa[2])*180.0/Math.PI,vec3(0,0,1)),rotate(Math.acos(alfa[1])*180.0/Math.PI,vec3(0,1,0))),rotate(Math.acos(alfa[0])*180.0/Math.PI,vec3(1,0,0)));
+
+
+
+        gl.uniform3fv(u_Alfa,flatten(alfa));
+
+    };
+
 
     $('#radio-1').change(function() {
         projMatrix = ortho(-2, 2, -2, 2, -2, 2 );
     });
     $('#radio-2').change(function() {
-        projMatrix = perspective( 180.0, 1.0, -1.0, 100.0 );
+        projMatrix = perspective( 30, 1.0, 1.0, 100.0 );
+        gl.uniformMatrix4fv(u_ViewMatrix, false, flatten(lookAt(vec3(3,3,7),vec3(0,0,0), vec3(0,1,0))));
+
     });
 
 
@@ -110,6 +171,7 @@ window.onload = function init()
         vec3(10.0, 0.0, 0.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 0.0, 10.0)
+
     ];
 
     cores_dos_eixos = [
@@ -119,6 +181,7 @@ window.onload = function init()
         vec4(0.0, 0.0, 0.0, 1.0),
         vec4(0.0, 0.0, 0.0, 1.0),
         vec4(0.0, 0.0, 0.0, 1.0)
+
     ];
 
     retas_paralelas_ao_cubo = [
@@ -136,8 +199,12 @@ window.onload = function init()
         vec4(0.0, 0.0, 0.0, 1.0)
     ];
 
+    $( "#dialog" ).dialog();
+    $( "#dialog" ).dialog("close");
+
+
     render();
-}
+};
 
 function colorCube()
 {
@@ -189,17 +256,35 @@ function quad(a, b, c, d)
         colors.push(vertexColors[a]);
 
     }
+
+
 }
 
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    theta[axis] += 2.0;
+    theta += 2.0;
 
-    if(theta[axis]==360.0){
-        theta[axis] = 0.0;
+    if(theta == 360.0){
+        theta = 0.0;
     }
+
+    switch (axis) {
+        case xAxis:
+            rotateMatrix = rotate(theta, vec3(1, 0, 0));
+            break;
+        case yAxis:
+            rotateMatrix = rotate(theta, vec3(0, 1, 0));
+            break;
+        case zAxis:
+            rotateMatrix = rotate(theta, vec3(0, 0, 1));
+            break;
+        default:
+            rotateMatrix = rotate(theta, vec3(1, 0, 0));
+            break;
+    }
+
 
     /*theta[yAxis] = 224;
     theta[zAxis] = 58;
@@ -209,19 +294,36 @@ function render()
      // [x variando, 266, 286] - tb com problema
     */
 
-    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
 
-    gl.uniform3fv(thetaLoc, theta);
+
+    var aux_cores_dos_eixos = cores_dos_eixos.slice(0);
+    var aux_eixos = eixos.slice(0);
+
+    if(is_eixo_arbitrario){
+
+        aux_eixos.push(vec3(0.0, 0.0, 0.0));
+        aux_eixos.push(eixo_arbitrario);
+        aux_cores_dos_eixos.push(vec4(0.502, 0.0, 0.0, 1.0));
+        aux_cores_dos_eixos.push(vec4(0.502, 0.0, 0.0, 1.0));
+
+        rotateMatrix = mult(rotacao_do_cubo_por_eixo_arbitrario(alfa, theta),matrix_position);
+
+        //rotateMatrix = matrix_position;
+    }
+
+    gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
+    gl.uniformMatrix4fv(u_RotateMatrix, false, flatten(rotateMatrix));
+    gl.uniform1f(thetaLoc, theta);
 
     gl.uniform1i(u_TipoDesenho, 0);
 
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(cores_dos_eixos), gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(aux_cores_dos_eixos), gl.STATIC_DRAW );
 
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(eixos), gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(aux_eixos), gl.STATIC_DRAW );
 
-    for(var i = 0; i<cores_dos_eixos.length; i=i+2){
+    for(var i = 0; i<aux_eixos.length; i=i+2){
         gl.drawArrays( gl.LINES, i, 2 );
     }
 
@@ -233,6 +335,7 @@ function render()
 
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+
 
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 
@@ -251,3 +354,14 @@ function render()
 
     requestAnimFrame( render );
 }
+
+function openDialog(){
+    $( "#dialog" ).dialog( "open" );
+
+}
+
+function closeDialog() {
+    $( "#dialog" ).dialog( "close" );
+
+}
+
