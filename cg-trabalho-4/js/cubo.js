@@ -153,6 +153,8 @@ window.onload = function init()
 
     $('#radio-1').change(function() {
         projMatrix = ortho(-2, 2, -2, 2, -2, 2 );
+        gl.uniformMatrix4fv(u_ViewMatrix, false, flatten(lookAt(vec3(0.20,0.25,0.25), vec3(0.0,0.0,0.0), vec3(0.0,1.0,0.0))));
+
     });
     $('#radio-2').change(function() {
         projMatrix = perspective( 30, 1.0, 1.0, 100.0 );
@@ -188,7 +190,7 @@ window.onload = function init()
         vec3(-0.7, -0.5, 10.0),
         vec3(-0.7, -0.5, -10.0),
         vec3(0.7, -0.5, 10.0),
-        vec3(0.7, -0.5, -10.0)
+        vec3(0.7, -0.5, -10.0),
 
     ];
 
@@ -196,10 +198,16 @@ window.onload = function init()
         vec4(0.0, 0.0, 0.0, 1.0),
         vec4(0.0, 0.0, 0.0, 1.0),
         vec4(0.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 0.0, 1.0)
+        vec4(0.0, 0.0, 0.0, 1.0),
+
     ];
 
-    $( "#dialog" ).dialog();
+    $( "#dialog" ).dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true
+    });
     $( "#dialog" ).dialog("close");
 
 
@@ -307,8 +315,6 @@ function render()
         aux_cores_dos_eixos.push(vec4(0.502, 0.0, 0.0, 1.0));
 
         rotateMatrix = mult(rotacao_do_cubo_por_eixo_arbitrario(alfa, theta),matrix_position);
-
-        //rotateMatrix = matrix_position;
     }
 
     gl.uniformMatrix4fv(u_ProjMatrix, false, flatten(projMatrix));
@@ -347,8 +353,11 @@ function render()
     gl.bufferData( gl.ARRAY_BUFFER, flatten(retas_paralelas_ao_cubo), gl.STATIC_DRAW );
 
 
-    for(i = 0; i<cores_das_retas_paralelas.length; i=i+2){
-       // gl.drawArrays( gl.LINES, i, 2 );
+
+
+
+    for(i = 0; i<retas_paralelas_ao_cubo.length; i=i+2){
+        gl.drawArrays( gl.LINES, i, 2 );
     }
 
 
