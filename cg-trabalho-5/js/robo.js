@@ -148,6 +148,7 @@ var leftHandMatrix = new Matrix4().setTranslate(0, -4, 0);
 var rightShoulderMatrix = new Matrix4().setTranslate(6.5, 2, 0);
 var rightArmMatrix = new Matrix4().setTranslate(0, -5, 0);
 var rightHandMatrix = new Matrix4().setTranslate(0, -4, 0);
+
 var headMatrix = new Matrix4().setTranslate(0, 7, 0);
 var legMatrix = new Matrix4().setTranslate(0, 2, 0);
 var footMatrix = new Matrix4().setTranslate(0, -8, 0);
@@ -163,26 +164,21 @@ var rightArmAngle = 0.0;
 var rightHandAngle = 0.0;
 
 var headAngle = 0.0;
-var legAngle = 0.0;
-var footAngle = 0.0;
+
 
 var torsoMatrixLocal = new Matrix4().setScale(10, 10, 5);
-
-// var leftShoulderMatrixLocal = new Matrix4().setScale(3, 5, 2);
-// var leftArmMatrixLocal = new Matrix4().setScale(3, 5, 2);
-// var leftHandMatrixLocal = new Matrix4().setScale(1, 3, 3);
 
 var shoulderMatrixLocal = new Matrix4().setScale(3, 5, 2);
 var armMatrixLocal = new Matrix4().setScale(3, 5, 2);
 var handMatrixLocal = new Matrix4().setScale(1, 3, 3);
 var headMatrixLocal = new Matrix4().setScale(4, 4, 4);
-var legMatrixLocal = new Matrix4().setScale(2, 15, 2);
+var legMatrixLocal = new Matrix4().setScale(2, 6, 2);
 var footMatrixLocal = new Matrix4().setScale(7, 2, 7);
 
 
 // view matrix
 var view = new Matrix4().setLookAt(
-    20, 20, 20,   // eye
+    20, -5, 20,   // eye
     0, 0, 0,      // at - looking at the origin
     0, 1, 0);     // up vector - y axis
 
@@ -205,16 +201,23 @@ function getChar(event) {
 function handleKeyPress(event) {
     var charCode = event.keyCode || event.which;
     var charStr = String.fromCharCode(charCode);
-    var currentShoulderRot, currentArm;
+    var currentShoulderRot, currentArm, currentTorso;
 
     switch (charStr) {
         case 't':
             torsoAngle += 15;
-            torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
+            //torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
+
+            footMatrix.setTranslate(0, -8, 0).rotate(torsoAngle, 0, 1, 0);
+
+
+            //currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-leftArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
+            //leftArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
             break;
         case 'T':
             torsoAngle -= 15;
-            torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
+            footMatrix.setTranslate(0, -8, 0).rotate(torsoAngle, 0, 1, 0);
+            //torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
             break;
         case 'j':
             leftShoulderAngle += 15;
