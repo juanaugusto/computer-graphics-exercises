@@ -64,10 +64,9 @@ basic Lambert shading. -->
 
         void main()
         {
-            gl_FragColor = color; //
 
             vec4 ambientProduct = lightAmbient*color;//materialAmbient;
-            vec4 diffuseProduct = lightDiffuse*color;//materialDiffuse;
+            vec4 diffuseProduct = lightDiffuse*materialDiffuse;
             vec4 specularProduct = lightSpecular*materialSpecular;
 
             vec4 fColor;

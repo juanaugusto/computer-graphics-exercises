@@ -184,34 +184,18 @@ var footMatrixLocal = new Matrix4().setScale(7, 2, 7);
 var anguloRotacaoCameraEixoY = 0.0;
 var anguloRotacaoCameraEixoX = 0.0;
 
-
-var camEye = [0.0, 0.0, 35.0];
-var camAt  = [0.0, 0.0, 0.0];
-var camUp  = [0.0, 1.0, 0.0];
-
-var lightPosition = new Vector4( [8.0, 10.0, 10.0, 0.0]);
+var lightPosition = new Vector4( [5.0, 10.0, 5.0, 0.0]);
 var lightAmbient = new Vector4( [1.0, 1.0, 1.0, 1.0 ]);
 var lightDiffuse = new Vector4(  [ 1.0, 1.0, 1.0, 1.0 ]);
-var lightSpecular =new Vector4(  [ 1.0, 1.0, 1.0, 1.0 ]);
+var lightSpecular =new Vector4(  [ 0.9, 0.7, 1.0, 1.0 ]);
 
 var materialAmbient = new Vector4(  [ 1.0, 0.0, 1.0, 1.0 ]);
 var materialDiffuse =new Vector4(  [ 1.0, 0.8, 0.0, 1.0 ]);
 var materialSpecular = new Vector4( [ 1.0, 1.0, 1.0, 1.0 ]);
-var materialShininess = 20.0;
+var materialShininess = 75.0;
 
 
 
-
-function cameraRotation(angleDegree)
-{
-    var x = camEye[0];
-    var z = camEye[2];
-
-    var angle = angleDegree*Math.PI/180.0;
-
-    camEye[0] = x * Math.cos(angle) + z * Math.sin(angle);
-    camEye[2] = z * Math.cos(angle) - x * Math.sin(angle);
-}
 
 //var radius = 30;
 //var view = new Matrix4().rotate(anguloRotacaoCameraEixoY, 0,1,0).translate(0,0, radius*1.5).invert();
@@ -482,6 +466,7 @@ function renderCube(matrixStack, matrixLocal) {
     var current = new Matrix4(matrixStack.top()).multiply(matrixLocal);
     gl.uniformMatrix4fv(modelMatrixloc, false, current.elements);
     gl.uniformMatrix3fv(normalMatrixLoc, false, makeNormalMatrixElements(current, view));
+
 
     gl.drawArrays(gl.TRIANGLES, 0, 36);
 
