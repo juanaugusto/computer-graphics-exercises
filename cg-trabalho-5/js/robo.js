@@ -239,7 +239,6 @@ function handleKeyDown(event) {
             if(anguloRotacaoCameraEixoY <= -180){
                 anguloRotacaoCameraEixoY = 180;
             }
-            console.log(anguloRotacaoCameraEixoY);
 
             break;
         case 39:
@@ -254,14 +253,12 @@ function handleKeyDown(event) {
             if(anguloRotacaoCameraEixoX >= 75){
                 anguloRotacaoCameraEixoX = 75;
             }
-            console.log(anguloRotacaoCameraEixoX);
             break;
         case 40:
             anguloRotacaoCameraEixoX -= 1;
             if(anguloRotacaoCameraEixoX <= -75){
                 anguloRotacaoCameraEixoX = -75;
             }
-            console.log(anguloRotacaoCameraEixoX);
             break;
         default:
             return;
@@ -293,23 +290,35 @@ function handleKeyPress(event) {
             break;
         case 'j':
             leftShoulderAngle += 15;
+            if(leftShoulderAngle>=180){
+                leftShoulderAngle = 180;
+            }
             // rotate shoulder clockwise about a point 2 units above its center
             currentShoulderRot = new Matrix4().setTranslate(0, 2, 0).rotate(-leftShoulderAngle, 1, 0, 0).translate(0, -2, 0);
             leftShoulderMatrix.setTranslate(-6.5, 2, 0).multiply(currentShoulderRot);
             break;
         case 'J':
             leftShoulderAngle -= 15;
+            if(leftShoulderAngle<=-90){
+                leftShoulderAngle = -90;
+            }
             currentShoulderRot = new Matrix4().setTranslate(0, 2, 0).rotate(-leftShoulderAngle, 1, 0, 0).translate(0, -2, 0);
             leftShoulderMatrix.setTranslate(-6.5, 2, 0).multiply(currentShoulderRot);
             break;
         case 'e':
             leftArmAngle += 15;
+            if(leftArmAngle>=150){
+                leftArmAngle = 150;
+            }
             // rotate arm clockwise about its top front corner
             currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-leftArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
             leftArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
             break;
         case 'E':
             leftArmAngle -= 15;
+            if(leftArmAngle<=0){
+                leftArmAngle = 0;
+            }
             currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-leftArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
             leftArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
             break;
@@ -324,23 +333,35 @@ function handleKeyPress(event) {
 
         case 'g':
             rightShoulderAngle += 15;
+            if(rightShoulderAngle>=180){
+                rightShoulderAngle = 180;
+            }
             // rotate shoulder clockwise about a point 2 units above its center
             currentShoulderRot = new Matrix4().setTranslate(0, 2, 0).rotate(-rightShoulderAngle, 1, 0, 0).translate(0, -2, 0);
             rightShoulderMatrix.setTranslate(6.5, 2, 0).multiply(currentShoulderRot);
             break;
         case 'G':
             rightShoulderAngle -= 15;
+            if(rightShoulderAngle<=-90){
+                rightShoulderAngle = -90;
+            }
             currentShoulderRot = new Matrix4().setTranslate(0, 2, 0).rotate(-rightShoulderAngle, 1, 0, 0).translate(0, -2, 0);
             rightShoulderMatrix.setTranslate(6.5, 2, 0).multiply(currentShoulderRot);
             break;
         case 'q':
             rightArmAngle += 15;
+            if(rightArmAngle>=150){
+                rightArmAngle = 150;
+            }
             // rotate arm clockwise about its top front corner
             currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-rightArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
             rightArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
             break;
         case 'Q':
             rightArmAngle -= 15;
+            if(rightArmAngle<=0){
+                rightArmAngle = 0;
+            }
             currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-rightArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
             rightArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
             break;
