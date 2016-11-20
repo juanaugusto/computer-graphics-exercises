@@ -153,6 +153,10 @@ var headMatrix = new Matrix4().setTranslate(0, 7, 0);
 var legMatrix = new Matrix4().setTranslate(0, 2, 0);
 var footMatrix = new Matrix4().setTranslate(0, -8, 0);
 
+var red = [1.0,0.0,0.0,1.0];
+var green = [0.0,1.0,0.0,1.0];
+var blue = [0.0,0.0,1.0,1.0];
+
 var torsoAngle = 0.0;
 
 var leftShoulderAngle = 0.0;
@@ -366,7 +370,7 @@ function handleKeyPress(event) {
 
 // helper function renders the cube based on the model transformation
 // on top of the stack and the given local transformation
-function renderCube(matrixStack, matrixLocal) {
+function renderCube(matrixStack, matrixLocal, u_color) {
     // bind the shader
     gl.useProgram(lightingShader);
 
@@ -402,7 +406,8 @@ function renderCube(matrixStack, matrixLocal) {
     loc = gl.getUniformLocation(lightingShader, "projection");
     gl.uniformMatrix4fv(loc, false, projection.elements);
     loc = gl.getUniformLocation(lightingShader, "u_Color");
-    gl.uniform4f(loc, 0.0, 1.0, 0.0, 1.0);
+    gl.uniform4f(loc, u_color[0], u_color[1], u_color[2], u_color[3]);
+
     var loc = gl.getUniformLocation(lightingShader, "lightPosition");
     gl.uniform4f(loc, 5.0, 10.0, 5.0, 1.0);
 
@@ -431,27 +436,27 @@ function draw() {
 
     // foot
     s.push(footMatrix);
-    renderCube(s, footMatrixLocal);
+    renderCube(s, footMatrixLocal, red);
 
     // leg relative to foot
     s.push(new Matrix4(s.top()).multiply(legMatrix));
-    renderCube(s, legMatrixLocal);
+    renderCube(s, legMatrixLocal, red);
 
     // torso relative to leg
     s.push(new Matrix4(s.top()).multiply(torsoMatrix));
-    renderCube(s, torsoMatrixLocal);
+    renderCube(s, torsoMatrixLocal, green);
 
     // shoulder relative to torso
     s.push(new Matrix4(s.top()).multiply(rightShoulderMatrix));
-    renderCube(s, shoulderMatrixLocal);
+    renderCube(s, shoulderMatrixLocal, blue);
 
     // arm relative to shoulder
     s.push(new Matrix4(s.top()).multiply(rightArmMatrix));
-    renderCube(s, armMatrixLocal);
+    renderCube(s, armMatrixLocal, blue);
 
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(rightHandMatrix));
-    renderCube(s, handMatrixLocal);
+    renderCube(s, handMatrixLocal, blue);
 
     s.pop();
     s.pop();
@@ -459,15 +464,15 @@ function draw() {
 
     // shoulder relative to torso
     s.push(new Matrix4(s.top()).multiply(leftShoulderMatrix));
-    renderCube(s, shoulderMatrixLocal);
+    renderCube(s, shoulderMatrixLocal, blue);
 
     // arm relative to shoulder
     s.push(new Matrix4(s.top()).multiply(leftArmMatrix));
-    renderCube(s, armMatrixLocal);
+    renderCube(s, armMatrixLocal, blue);
 
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(leftHandMatrix));
-    renderCube(s, handMatrixLocal);
+    renderCube(s, handMatrixLocal, blue);
 
     s.pop();
     s.pop();
@@ -475,7 +480,7 @@ function draw() {
 
     // head relative to torso
     s.push(new Matrix4(s.top()).multiply(headMatrix));
-    renderCube(s, headMatrixLocal);
+    renderCube(s, headMatrixLocal, blue);
 
     s.pop();
     s.pop();
