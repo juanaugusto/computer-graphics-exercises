@@ -1,75 +1,100 @@
-
 <!--  Hierarchical transformation demo.  Vertex shader does
-basic Lambert shading. -->		
+basic Lambert shading. -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Hierarchy</title>
+    <meta charset="utf-8"/>
+    <title>Hierarchy</title>
+
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery/jquery-1.12.4.js"></script>
+    <script src="js/jquery/jquery-ui.js"></script>
+
+    <script id="vertexLightingShader" type="x-shader/x-vertex">
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+        uniform vec4 u_Color;
+        uniform mat3 normalMatrix;
+        uniform vec4 lightPosition;
+
+        attribute vec4 a_Position;
+        attribute vec3 a_Normal;
+
+        varying vec4 color;
+        void main()
+        {
+          float ambientFactor = 0.3;
+          vec3 lightDirection = normalize((view * lightPosition - view * model * a_Position).xyz);
+          //vec3 normal = (view * model * vec4(a_Normal, 0.0)).xyz;
+          vec3 normal = normalize(normalMatrix * a_Normal);
+          float diffuseFactor = max(0.0, dot(lightDirection, normal));
+          color = u_Color * diffuseFactor + u_Color * ambientFactor;
+          color.a = 1.0;
+          gl_Position = projection * view * model * a_Position;
+        }
+
+
+    </script>
+
+    <script id="fragmentLightingShader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        void main()
+        {
+          gl_FragColor = color;
+        }
+
+
+    </script>
+    <script src="js/common/webgl-utils.js"></script>
+    <script src="js/common/webgl-debug.js"></script>
+    <script src="js/common/cuon-utils.js"></script>
+    <script src="js/common/cuon-matrix.js"></script>
+    <script src="js/robo.js"></script>
 </head>
 
-<body> 
+<body onload="main()">
+
+<div id="canvas_place">
     <canvas id="theCanvas" width="600" height="400">
-    Please use a browser that supports "canvas"
+        Please use a browser that supports "canvas"
     </canvas>
 
-<p>
-Keyboard controls:
-<ul style="list-style:none;">
-<li>t, T - torso rotation
-<li>h, H - head rotation
+</div>
 
-<li>j, J - left shoulder rotation
-<li>e, E - left arm rotation
-<li>c, C - left hand rotation
+<div id="infos">
+
+    <p>
+        Keyboard controls:
+
+    </p>
+
+    <ul style="list-style:none;">
+        <li>t, T - torso rotation</li>
+        <li>h, H - head rotation</li>
+
+        <li>j, J - left shoulder rotation</li>
+        <li>e, E - left arm rotation</li>
+        <li>c, C - left hand rotation</li>
 
 
-<li>g, G - right shoulder rotation
-<li>q, Q - right arm rotation
-<li>z, Z - right hand rotation
+        <li>g, G - right shoulder rotation</li>
+        <li>q, Q - right arm rotation</li>
+        <li>z, Z - right hand rotation</li>
 
-</ul>
+        <li>Left/Right Arrow - Moves the camera around Y Axis</li>
+        <li>Up/Down Arrow - Moves the camera around X Axis</li>
 
-<script id="vertexLightingShader" type="x-shader/x-vertex">
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform vec4 u_Color;
-uniform mat3 normalMatrix;
-uniform vec4 lightPosition;
 
-attribute vec4 a_Position;
-attribute vec3 a_Normal;
+    </ul>
 
-varying vec4 color;
-void main() 
-{
-  float ambientFactor = 0.3;
-  vec3 lightDirection = normalize((view * lightPosition - view * model * a_Position).xyz);
-  //vec3 normal = (view * model * vec4(a_Normal, 0.0)).xyz;
-  vec3 normal = normalize(normalMatrix * a_Normal);
-  float diffuseFactor = max(0.0, dot(lightDirection, normal));
-  color = u_Color * diffuseFactor + u_Color * ambientFactor;
-  color.a = 1.0;
-  gl_Position = projection * view * model * a_Position;
-}
-</script>
 
-<script id="fragmentLightingShader" type="x-shader/x-fragment">
-precision mediump float;
-varying vec4 color;
-void main() 
-{
-  gl_FragColor = color;
-}
-</script>
-		<script src="js/common/webgl-utils.js"></script>
-		<script src="js/common/webgl-debug.js"></script>
-		<script src="js/common/cuon-utils.js"></script>
-		<script src="js/common/cuon-matrix.js"></script>
-		<script src="js/robo.js"></script>
-		<script>window.onload = main</script>
+</div>
+
+
 </body>
 </html>
 

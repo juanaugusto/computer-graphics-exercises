@@ -176,11 +176,39 @@ var legMatrixLocal = new Matrix4().setScale(2, 6, 2);
 var footMatrixLocal = new Matrix4().setScale(7, 2, 7);
 
 
+var anguloRotacaoCameraEixoY = 0.0;
+var anguloRotacaoCameraEixoX = 0.0;
+
+
+var camEye = [0.0, 0.0, 35.0];
+var camAt  = [0.0, 0.0, 0.0];
+var camUp  = [0.0, 1.0, 0.0];
+
+function cameraRotation(angleDegree)
+{
+    var x = camEye[0];
+    var z = camEye[2];
+
+    var angle = angleDegree*Math.PI/180.0;
+
+    camEye[0] = x * Math.cos(angle) + z * Math.sin(angle);
+    camEye[2] = z * Math.cos(angle) - x * Math.sin(angle);
+}
+
+//var radius = 30;
+//var view = new Matrix4().rotate(anguloRotacaoCameraEixoY, 0,1,0).translate(0,0, radius*1.5).invert();
+
+
+
+
+//var cameraMatrix = m4.yRotation(cameraAngleRadians);
+//cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 1.5);
+
 // view matrix
-var view = new Matrix4().setLookAt(
-    20, -5, 20,   // eye
-    0, 0, 0,      // at - looking at the origin
-    0, 1, 0);     // up vector - y axis
+//  var view = new Matrix4().setLookAt(
+//      20, -5, 20,   // eye
+//      0, 0, 0,      // at - looking at the origin
+//      0, 1, 0);     // up vector - y axis
 
 // Here use aspect ratio 3/2 corresponding to canvas size 600 x 400
 var projection = new Matrix4().setPerspective(45, 1.5, 0.1, 1000);
@@ -189,11 +217,50 @@ var projection = new Matrix4().setPerspective(45, 1.5, 0.1, 1000);
 // from http://javascript.info/tutorial/keyboard-events
 function getChar(event) {
     if (event.which == null) {
-        return String.fromCharCode(event.keyCode) // IE
+        return String.fromCharCode(event.keyCode); // IE
     } else if (event.which != 0 && event.charCode != 0) {
-        return String.fromCharCode(event.which)   // the rest
+        return String.fromCharCode(event.which);   // the rest
     } else {
-        return null // special key
+        return null; // special key
+    }
+}
+
+// handler for key down events adjusts camera position
+function handleKeyDown(event) {
+    switch (event.which){
+        case 37:
+
+            anguloRotacaoCameraEixoY -= 1;
+            if(anguloRotacaoCameraEixoY <= -180){
+                anguloRotacaoCameraEixoY = 180;
+            }
+            console.log(anguloRotacaoCameraEixoY);
+
+            break;
+        case 39:
+            anguloRotacaoCameraEixoY += 1;
+            if(anguloRotacaoCameraEixoY >= 180){
+                anguloRotacaoCameraEixoY = -180;
+            }
+            break;
+
+        case 38:
+            anguloRotacaoCameraEixoX += 1;
+            if(anguloRotacaoCameraEixoX >= 75){
+                anguloRotacaoCameraEixoX = 75;
+            }
+            console.log(anguloRotacaoCameraEixoX);
+            break;
+        case 40:
+            anguloRotacaoCameraEixoX -= 1;
+            if(anguloRotacaoCameraEixoX <= -75){
+                anguloRotacaoCameraEixoX = -75;
+            }
+            console.log(anguloRotacaoCameraEixoX);
+            break;
+        default:
+            return;
+
     }
 }
 
@@ -289,9 +356,12 @@ function handleKeyPress(event) {
             headAngle -= 15;
             headMatrix.setTranslate(0, 7, 0).rotate(headAngle, 0, 1, 0);
             break;
+
         default:
             return;
     }
+
+
 }
 
 // helper function renders the cube based on the model transformation
@@ -323,6 +393,10 @@ function renderCube(matrixStack, matrixLocal) {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
     gl.vertexAttribPointer(normalIndex, 3, gl.FLOAT, false, 0, 0);
 
+    var radius = 25;
+    var view = new Matrix4().rotate(anguloRotacaoCameraEixoY, 0,1,0).rotate(anguloRotacaoCameraEixoX, 1,0,0).translate(0,0, radius*1.5).invert();
+
+    //var view = new Matrix4().setLookAt(camEye[0],camEye[1],camEye[2],camAt[0],camAt[1],camAt[2], camUp[0], camUp[1], camUp[2]);
     var loc = gl.getUniformLocation(lightingShader, "view");
     gl.uniformMatrix4fv(loc, false, view.elements);
     loc = gl.getUniformLocation(lightingShader, "projection");
@@ -338,7 +412,7 @@ function renderCube(matrixStack, matrixLocal) {
     // transform using current model matrix on top of stack
     var current = new Matrix4(matrixStack.top()).multiply(matrixLocal);
     gl.uniformMatrix4fv(modelMatrixloc, false, current.elements);
-    gl.uniformMatrix3fv(normalMatrixLoc, false, makeNormalMatrixElements(current, view))
+    gl.uniformMatrix3fv(normalMatrixLoc, false, makeNormalMatrixElements(current, view));
 
     gl.drawArrays(gl.TRIANGLES, 0, 36);
 
@@ -403,6 +477,11 @@ function draw() {
     s.push(new Matrix4(s.top()).multiply(headMatrix));
     renderCube(s, headMatrixLocal);
 
+    s.pop();
+    s.pop();
+    s.pop();
+    s.pop();
+
     if (!s.isEmpty()) {
         console.log("Warning: pops do not match pushes");
     }
@@ -414,13 +493,14 @@ function main() {
 
     // basically this function does setup that "should" only have to be done once,
     // while draw() does things that have to be repeated each time the canvas is 
-    // redrawn	
+    // redrawn
 
     // retrieve <canvas> element
     var canvas = document.getElementById('theCanvas');
 
     // key handler
     window.onkeypress = handleKeyPress;
+    window.onkeydown = handleKeyDown;
 
     // get the rendering context for WebGL, using the utility from the teal book
     gl = getWebGLContext(canvas);
