@@ -13,6 +13,8 @@ basic Lambert shading. -->
     <script src="js/jquery/jquery-ui.js"></script>
 
     <script id="vertexLightingShader" type="x-shader/x-vertex">
+        attribute vec4 a_caca;
+
         uniform mat4 model;
         uniform mat4 view;
         uniform mat4 projection;
@@ -20,25 +22,28 @@ basic Lambert shading. -->
         uniform mat3 normalMatrix;
         uniform vec4 lightPosition;
 
-        attribute vec4 a_Color;
+        varying vec3 N, L, E;
+
+
         attribute vec4 a_Position;
         attribute vec3 a_Normal;
+        attribute vec4 a_Color;
 
         varying vec4 color;
         void main()
         {
-          float ambientFactor = 0.3;
-          vec3 lightDirection = normalize((view * lightPosition - view * model * a_Position).xyz);
-          //vec3 normal = (view * model * vec4(a_Normal, 0.0)).xyz;
-          vec3 normal = normalize(normalMatrix * a_Normal);
-          float diffuseFactor = max(0.0, dot(lightDirection, normal));
-          color = a_Color * diffuseFactor + a_Color * ambientFactor;
+            color = a_Color;
 
-          //vec4 ambient = u_AmbientLight * a_Color.rgb;
-          //color = vec4(diffuse + ambient, a_Color.a);
-          color.a = 1.0;
+            //tentativa nova
+            vec3 pos = -(model * a_Position).xyz;
+            vec3 light = lightPosition.xyz;
 
-          gl_Position = projection * view * model * a_Position;
+            L = normalize(light - pos);
+            E = -pos;
+            N = normalize((mat3(model) * a_Normal).xyz);
+
+
+            gl_Position = projection * view * model * a_Position;
         }
 
 
@@ -47,13 +52,44 @@ basic Lambert shading. -->
     <script id="fragmentLightingShader" type="x-shader/x-fragment">
         precision mediump float;
         varying vec4 color;
+
+        uniform vec4 lightAmbient;
+        uniform vec4 lightDiffuse;
+        uniform vec4 lightSpecular;
+        uniform vec4 materialAmbient;
+        uniform vec4 materialDiffuse;
+        uniform vec4 materialSpecular;
+        uniform float materialShininess;
+        varying vec3 N, L, E;
+
         void main()
         {
-          gl_FragColor = color;
+            gl_FragColor = color; //
+
+            vec4 ambientProduct = lightAmbient*color;//materialAmbient;
+            vec4 diffuseProduct = lightDiffuse*color;//materialDiffuse;
+            vec4 specularProduct = lightSpecular*materialSpecular;
+
+            vec4 fColor;
+            vec3 H = normalize(L + E);
+            vec4 ambient = ambientProduct;
+            float Kd = max(dot(L, N), 0.0);
+            vec4 diffuse = Kd * diffuseProduct;
+            float Ks = pow(max(dot(N, H), 0.0), materialShininess);
+            vec4 specular = Ks * specularProduct;
+            if (dot(L, N) < 0.0) {
+            specular = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+
+            fColor = ambient + diffuse + specular;
+            fColor.a = 1.0;
+            gl_FragColor = fColor;
+
         }
 
 
     </script>
+
     <script src="js/common/webgl-utils.js"></script>
     <script src="js/common/webgl-debug.js"></script>
     <script src="js/common/cuon-utils.js"></script>

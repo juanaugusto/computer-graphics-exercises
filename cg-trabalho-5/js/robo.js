@@ -10,7 +10,7 @@ function Stack() {
 
 Stack.prototype.push = function (m) {
     this.elements[this.t++] = m;
-}
+};
 
 Stack.prototype.top = function () {
     if (this.t <= 0) {
@@ -19,7 +19,7 @@ Stack.prototype.top = function () {
     } else {
         return this.elements[this.t - 1];
     }
-}
+};
 
 Stack.prototype.pop = function () {
     if (this.t <= 0) {
@@ -31,11 +31,11 @@ Stack.prototype.pop = function () {
         this.elements[this.t] = undefined;
         return temp;
     }
-}
+};
 
 Stack.prototype.isEmpty = function () {
     return this.t <= 0;
-}
+};
 
 
 // Creates data for vertices, colors, and normal vectors for
@@ -188,6 +188,19 @@ var anguloRotacaoCameraEixoX = 0.0;
 var camEye = [0.0, 0.0, 35.0];
 var camAt  = [0.0, 0.0, 0.0];
 var camUp  = [0.0, 1.0, 0.0];
+
+var lightPosition = new Vector4( [8.0, 10.0, 10.0, 0.0]);
+var lightAmbient = new Vector4( [1.0, 1.0, 1.0, 1.0 ]);
+var lightDiffuse = new Vector4(  [ 1.0, 1.0, 1.0, 1.0 ]);
+var lightSpecular =new Vector4(  [ 1.0, 1.0, 1.0, 1.0 ]);
+
+var materialAmbient = new Vector4(  [ 1.0, 0.0, 1.0, 1.0 ]);
+var materialDiffuse =new Vector4(  [ 1.0, 0.8, 0.0, 1.0 ]);
+var materialSpecular = new Vector4( [ 1.0, 1.0, 1.0, 1.0 ]);
+var materialShininess = 20.0;
+
+
+
 
 function cameraRotation(angleDegree)
 {
@@ -415,7 +428,7 @@ function renderCube(matrixStack, matrixLocal) {
         return;
     }
 
-    // "enable" the a_position attribute 
+    // "enable" the a_position attribute
     gl.enableVertexAttribArray(positionIndex);
     gl.enableVertexAttribArray(normalIndex);
     gl.enableVertexAttribArray(colorIndex);
@@ -440,7 +453,27 @@ function renderCube(matrixStack, matrixLocal) {
     //gl.uniform4f(loc, u_color[0], u_color[1], u_color[2], u_color[3]);
 
     var loc = gl.getUniformLocation(lightingShader, "lightPosition");
-    gl.uniform4f(loc, 5.0, 10.0, 5.0, 1.0);
+    gl.uniform4f(loc, lightPosition.elements[0], lightPosition.elements[1], lightPosition.elements[2], lightPosition.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "lightAmbient");
+    gl.uniform4f(loc, lightAmbient.elements[0], lightAmbient.elements[1], lightAmbient.elements[2], lightAmbient.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "lightDiffuse");
+    gl.uniform4f(loc, lightDiffuse.elements[0], lightDiffuse.elements[1], lightDiffuse.elements[2], lightDiffuse.elements[3]);
+    var loc = gl.getUniformLocation(lightingShader, "lightSpecular");
+    gl.uniform4f(loc, lightSpecular.elements[0], lightSpecular.elements[1], lightSpecular.elements[2], lightSpecular.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "materialAmbient");
+    gl.uniform4f(loc, materialAmbient.elements[0], materialAmbient.elements[1], materialAmbient.elements[2], materialAmbient.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "materialDiffuse");
+    gl.uniform4f(loc, materialDiffuse.elements[0], materialDiffuse.elements[1], materialDiffuse.elements[2], materialDiffuse.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "materialSpecular");
+    gl.uniform4f(loc, materialSpecular.elements[0], materialSpecular.elements[1], materialSpecular.elements[2], materialSpecular.elements[3]);
+
+    var loc = gl.getUniformLocation(lightingShader, "materialShininess");
+    gl.uniform1f(loc,materialShininess);
 
     var modelMatrixloc = gl.getUniformLocation(lightingShader, "model");
     var normalMatrixLoc = gl.getUniformLocation(lightingShader, "normalMatrix");
