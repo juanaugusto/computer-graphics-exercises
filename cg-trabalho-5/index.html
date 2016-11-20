@@ -20,6 +20,7 @@ basic Lambert shading. -->
         uniform mat3 normalMatrix;
         uniform vec4 lightPosition;
 
+        attribute vec4 a_Color;
         attribute vec4 a_Position;
         attribute vec3 a_Normal;
 
@@ -31,8 +32,12 @@ basic Lambert shading. -->
           //vec3 normal = (view * model * vec4(a_Normal, 0.0)).xyz;
           vec3 normal = normalize(normalMatrix * a_Normal);
           float diffuseFactor = max(0.0, dot(lightDirection, normal));
-          color = u_Color * diffuseFactor + u_Color * ambientFactor;
+          color = a_Color * diffuseFactor + a_Color * ambientFactor;
+
+          //vec4 ambient = u_AmbientLight * a_Color.rgb;
+          //color = vec4(diffuse + ambient, a_Color.a);
           color.a = 1.0;
+
           gl_Position = projection * view * model * a_Position;
         }
 

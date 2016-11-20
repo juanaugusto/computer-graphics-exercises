@@ -134,6 +134,7 @@ var gl;
 // handle to a buffer on the GPU
 var vertexBuffer;
 var vertexNormalBuffer;
+var vertexColorBuffer;
 
 // handle to the compiled shader program on the GPU
 var lightingShader;
@@ -370,7 +371,7 @@ function handleKeyPress(event) {
 
 // helper function renders the cube based on the model transformation
 // on top of the stack and the given local transformation
-function renderCube(matrixStack, matrixLocal, u_color) {
+function renderCube(matrixStack, matrixLocal) {
     // bind the shader
     gl.useProgram(lightingShader);
 
@@ -387,15 +388,24 @@ function renderCube(matrixStack, matrixLocal, u_color) {
         return;
     }
 
+    var colorIndex = gl.getAttribLocation(lightingShader, 'a_Color');
+    if (colorIndex < 0) {
+        console.log('Failed to get the storage location of a_Color');
+        return;
+    }
+
     // "enable" the a_position attribute 
     gl.enableVertexAttribArray(positionIndex);
     gl.enableVertexAttribArray(normalIndex);
+    gl.enableVertexAttribArray(colorIndex);
 
     // bind data for points and normals
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.vertexAttribPointer(positionIndex, 3, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
     gl.vertexAttribPointer(normalIndex, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+    gl.vertexAttribPointer(colorIndex, 4, gl.FLOAT, false, 0, 0);
 
     var radius = 25;
     var view = new Matrix4().rotate(anguloRotacaoCameraEixoY, 0,1,0).rotate(anguloRotacaoCameraEixoX, 1,0,0).translate(0,0, radius*1.5).invert();
@@ -405,8 +415,8 @@ function renderCube(matrixStack, matrixLocal, u_color) {
     gl.uniformMatrix4fv(loc, false, view.elements);
     loc = gl.getUniformLocation(lightingShader, "projection");
     gl.uniformMatrix4fv(loc, false, projection.elements);
-    loc = gl.getUniformLocation(lightingShader, "u_Color");
-    gl.uniform4f(loc, u_color[0], u_color[1], u_color[2], u_color[3]);
+    //loc = gl.getUniformLocation(lightingShader, "u_Color");
+    //gl.uniform4f(loc, u_color[0], u_color[1], u_color[2], u_color[3]);
 
     var loc = gl.getUniformLocation(lightingShader, "lightPosition");
     gl.uniform4f(loc, 5.0, 10.0, 5.0, 1.0);
@@ -436,27 +446,27 @@ function draw() {
 
     // foot
     s.push(footMatrix);
-    renderCube(s, footMatrixLocal, red);
+    renderCube(s, footMatrixLocal);
 
     // leg relative to foot
     s.push(new Matrix4(s.top()).multiply(legMatrix));
-    renderCube(s, legMatrixLocal, red);
+    renderCube(s, legMatrixLocal);
 
     // torso relative to leg
     s.push(new Matrix4(s.top()).multiply(torsoMatrix));
-    renderCube(s, torsoMatrixLocal, green);
+    renderCube(s, torsoMatrixLocal);
 
     // shoulder relative to torso
     s.push(new Matrix4(s.top()).multiply(rightShoulderMatrix));
-    renderCube(s, shoulderMatrixLocal, blue);
+    renderCube(s, shoulderMatrixLocal);
 
     // arm relative to shoulder
     s.push(new Matrix4(s.top()).multiply(rightArmMatrix));
-    renderCube(s, armMatrixLocal, blue);
+    renderCube(s, armMatrixLocal);
 
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(rightHandMatrix));
-    renderCube(s, handMatrixLocal, blue);
+    renderCube(s, handMatrixLocal);
 
     s.pop();
     s.pop();
@@ -464,15 +474,15 @@ function draw() {
 
     // shoulder relative to torso
     s.push(new Matrix4(s.top()).multiply(leftShoulderMatrix));
-    renderCube(s, shoulderMatrixLocal, blue);
+    renderCube(s, shoulderMatrixLocal);
 
     // arm relative to shoulder
     s.push(new Matrix4(s.top()).multiply(leftArmMatrix));
-    renderCube(s, armMatrixLocal, blue);
+    renderCube(s, armMatrixLocal);
 
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(leftHandMatrix));
-    renderCube(s, handMatrixLocal, blue);
+    renderCube(s, handMatrixLocal);
 
     s.pop();
     s.pop();
@@ -480,7 +490,7 @@ function draw() {
 
     // head relative to torso
     s.push(new Matrix4(s.top()).multiply(headMatrix));
-    renderCube(s, headMatrixLocal, blue);
+    renderCube(s, headMatrixLocal);
 
     s.pop();
     s.pop();
@@ -532,6 +542,15 @@ function main() {
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, cube.vertices, gl.STATIC_DRAW);
+
+    // buffer for colors of cube faces
+    vertexColorBuffer = gl.createBuffer();
+    if (!vertexColorBuffer) {
+        console.log('Failed to create the buffer object');
+        return;
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, cube.colors, gl.STATIC_DRAW);
 
     // buffer for vertex normals
     vertexNormalBuffer = gl.createBuffer();
