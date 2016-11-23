@@ -158,7 +158,7 @@ var red = [1.0,0.0,0.0,1.0];
 var green = [0.0,1.0,0.0,1.0];
 var blue = [0.0,0.0,1.0,1.0];
 
-var torsoAngle = 0.0;
+var footAngle = 0.0;
 
 var leftShoulderAngle = 0.0;
 var leftArmAngle = 0.0;
@@ -169,6 +169,8 @@ var rightArmAngle = 0.0;
 var rightHandAngle = 0.0;
 
 var headAngle = 0.0;
+
+var torsoAngle = 0.0;
 
 
 var torsoMatrixLocal = new Matrix4().setScale(10, 10, 5);
@@ -267,23 +269,30 @@ function handleKeyDown(event) {
 function handleKeyPress(event) {
     var charCode = event.keyCode || event.which;
     var charStr = String.fromCharCode(charCode);
-    var currentShoulderRot, currentArm, currentTorso;
+    var currentShoulderRot, currentArm, currentTorso, currentTorsoRot;
 
     switch (charStr) {
-        case 't':
+    	case 't':
             torsoAngle += 15;
-            //torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
-
-            footMatrix.setTranslate(0, -8, 0).rotate(torsoAngle, 0, 1, 0);
-
-
-            //currentArm = new Matrix4().setTranslate(0, 2.5, 1.0).rotate(-leftArmAngle, 1, 0, 0).translate(0, -2.5, -1.0);
-            //leftArmMatrix.setTranslate(0, -5, 0).multiply(currentArm);
+            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(-torsoAngle, 0, 1, 0).translate(0, -8, 0);
+            torsoMatrix.setTranslate(0, 8, 0).multiply(currentTorsoRot);
             break;
         case 'T':
-            torsoAngle -= 15;
-            footMatrix.setTranslate(0, -8, 0).rotate(torsoAngle, 0, 1, 0);
-            //torsoMatrix.setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0);
+            torsoAngle -= 15;     
+            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(-torsoAngle, 0, 1, 0).translate(0, -8, 0);
+            torsoMatrix.setTranslate(0, 8, 0).multiply(currentTorsoRot);
+            break;
+    
+        case 'b':
+            footAngle += 15;
+            footMatrix.setTranslate(0, -8, 0).rotate(footAngle, 0, 1, 0);
+
+         
+            break;
+        case 'B':
+            footAngle -= 15;
+            footMatrix.setTranslate(0, -8, 0).rotate(footAngle, 0, 1, 0);
+
             break;
         case 'j':
             leftShoulderAngle += 15;
