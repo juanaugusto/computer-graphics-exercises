@@ -274,12 +274,12 @@ function handleKeyPress(event) {
     switch (charStr) {
     	case 't':
             torsoAngle += 15;
-            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(-torsoAngle, 0, 1, 0).translate(0, -8, 0);
+            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0).translate(0, -8, 0);
             torsoMatrix.setTranslate(0, 8, 0).multiply(currentTorsoRot);
             break;
         case 'T':
             torsoAngle -= 15;     
-            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(-torsoAngle, 0, 1, 0).translate(0, -8, 0);
+            currentTorsoRot = new Matrix4().setTranslate(0, 8, 0).rotate(torsoAngle, 0, 1, 0).translate(0, -8, 0);
             torsoMatrix.setTranslate(0, 8, 0).multiply(currentTorsoRot);
             break;
     
