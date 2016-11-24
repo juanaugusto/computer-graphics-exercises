@@ -66,7 +66,7 @@ basic Lambert shading. -->
         {
 
             vec4 ambientProduct = lightAmbient*color;//materialAmbient;
-            vec4 diffuseProduct = lightDiffuse*materialDiffuse;
+            vec4 diffuseProduct = lightDiffuse*color;//materialDiffuse;
             vec4 specularProduct = lightSpecular*materialSpecular;
 
             vec4 fColor;

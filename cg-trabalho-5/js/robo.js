@@ -187,9 +187,9 @@ var anguloRotacaoCameraEixoY = 0.0;
 var anguloRotacaoCameraEixoX = 0.0;
 
 var lightPosition = new Vector4( [5.0, 10.0, 5.0, 0.0]);
-var lightAmbient = new Vector4( [1.0, 1.0, 1.0, 1.0 ]);
-var lightDiffuse = new Vector4(  [ 1.0, 1.0, 1.0, 1.0 ]);
-var lightSpecular =new Vector4(  [ 0.9, 0.7, 1.0, 1.0 ]);
+var lightAmbient = new Vector4( [0.5, 0.5, 0.5, 1.0 ]);
+var lightDiffuse = new Vector4(  [ 0.5, 0.5, 0.5, 1.0 ]);
+var lightSpecular =new Vector4(  [ 0.6, 0.6, 0.6, 1.0 ]);
 
 var materialAmbient = new Vector4(  [ 1.0, 0.0, 1.0, 1.0 ]);
 var materialDiffuse =new Vector4(  [ 1.0, 0.8, 0.0, 1.0 ]);
