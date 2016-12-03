@@ -30,3 +30,9 @@ var particleSystem;
 var particleCount;
 
 var particles;
+
+var clock;
+
+var treeGroup;
+
+var sections, heights, widths;

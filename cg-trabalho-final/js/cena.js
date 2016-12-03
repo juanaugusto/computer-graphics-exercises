@@ -3,6 +3,8 @@
  */
 
 window.onload = function(){
+    clock = new THREE.Clock();
+    treeGroup = new THREE.Group();
 
     scene1 = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -127,7 +129,6 @@ window.onload = function(){
 function animate() {
 
     // add some rotation to the system
-    particleSystem.rotation.x += 0.01;
 
 
 
@@ -144,8 +145,17 @@ function render() {
 
     camera.lookAt( scene1.position );
 
+    particleSystem.rotation.x += 0.01;
+
     renderer.clear();
-   // renderer.setScissorTest( true );
+
+
+
+    refreshTree();
+
+    treeGroup.rotation.y -= clock.getDelta() * 0.5;
+
+    // renderer.setScissorTest( true );
 
     //renderer.setScissor( 0, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT );
     renderer.render( scene1, camera );
@@ -226,6 +236,83 @@ function createGoldenSet(start, count){
         grSet.push(currentValue);
     }
     return grSet;
+}
+
+function makeTree(scene){
+
+    var scale = 150;
+
+    //Build utility variables
+    var isTrunk = true; // initially make a trunk then make the rest of the tree
+    var lastHeight = 0;
+    var sections = 7;
+    //var heights = [54,60,63,66,68,69,71];
+
+    var heights = [54,60,63,66,68,69,71];
+
+    //var heights = [ 80,80,80,80,80,80,80];
+    var currentHeight = 0;//-heights[0] / 2;
+    var widths = [372.245046479392,252.19076427505215 ,149.88792298482537, 101.9350748994837,71.37881792953567, 39.041810196524466, 25,0];
+
+    //console.log(heights);
+
+    for(var trunkIndex = 0; trunkIndex < sections; trunkIndex ++){
+        var height = heights[trunkIndex];
+        var botWidth = widths[trunkIndex];
+        var topWidth = widths[trunkIndex + 1] / 2;
+
+        var cubeMaterial = new THREE.MeshLambertMaterial({
+            color: 0x1B5E20
+        });
+
+        //cube.position.y += currentHeight;
+        currentHeight += height * 0.75;
+
+
+        var geom;
+        if(isTrunk){
+            geom = makeSection(topWidth / 3, topWidth / 5, height,currentHeight , 0, 0);
+            cubeMaterial = new THREE.MeshLambertMaterial({
+                color: 0x4E342E
+            });
+
+
+            isTrunk = false;
+        }
+        else{
+            geom = makeSection(botWidth, topWidth, height,currentHeight, 0, 0);
+        }
+
+        var cube = new THREE.Mesh(geom, cubeMaterial);
+
+        //Main rotation (original before spin)
+        //cube.rotation.y = Math.PI * (Math.random() * 90) / 180;
+        //console.log(currentHeight);
+        for(var idx in cube.vertices){
+            cube.vertices[idx].position.y += currentHeight;
+        }
+
+        //add shadows
+        cube.castShadow = true;
+        cube.receiveShadow = false;
+
+
+        //Add the cube to the scene
+        scene.add(cube);
+    }
+
+    return scene;
+    //scene.position.y = - currentHeight/2;
+
+}
+
+function refreshTree(){
+    scene1.remove(treeGroup);
+    var rotY = treeGroup.rotation.y;
+    treeGroup = new THREE.Group();
+    treeGroup = makeTree(treeGroup);
+    treeGroup.rotation.y = rotY;
+    scene1.add(treeGroup);
 }
 
 
