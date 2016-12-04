@@ -174,25 +174,127 @@ window.onload = function(){
     var i;
     for (i = 0; i<files_gift_box_colors.length; i++){
 
-            mtlLoader.load(files_gift_box_colors[i], function( materials ) {
+        mtlLoader.load(files_gift_box_colors[i], function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'models/' );
+        objLoader.load( 'gift_box.obj', function ( object ) {
+            acesso++;
+            object.position.x = gift_box_positions[acesso][0];
+            object.position.y = gift_box_positions[acesso][1];
+            object.position.z = gift_box_positions[acesso][2];
+
+            object.rotation.x = -Math.PI / 2;
+
+            object.scale.set(0.8,0.8,0.8);
+
+            scene1.add( object );
+        }, onProgress, onError );
+        });
+    }
+
+    mtlLoader.load('snowman.mtl', function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'models/' );
+        objLoader.load( 'snowman.obj', function ( object ) {
+
+            object.position.x = -300;
+            object.position.y = -100;
+            object.position.z = 0;
+
+            object.scale.set(20,20,20);
+
+
+            scene1.add( object );
+        }, onProgress, onError );
+    });
+
+    var spear_positions = [
+        [400,0,0],
+        [-400,0,0]
+    ];
+
+    for (i = 0; i<spear_positions.length; i++){
+        mtlLoader.load('spear.mtl', function( materials ) {
             materials.preload();
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials( materials );
             objLoader.setPath( 'models/' );
-            objLoader.load( 'gift_box.obj', function ( object ) {
-                acesso++;
-                object.position.x = gift_box_positions[acesso][0];
-                object.position.y = gift_box_positions[acesso][1];
-                object.position.z = gift_box_positions[acesso][2];
+            objLoader.load( 'spear.obj', function ( object ) {
+                acesso2++;
 
-                object.rotation.x = -Math.PI / 2;
+                object.position.x =spear_positions[acesso2][0];
+                object.position.y =spear_positions[acesso2][1];
+                object.position.z = spear_positions[acesso2][2];
 
-                object.scale.set(0.8,0.8,0.8);
+                object.rotation.x = -Math.PI/2;
+
+                object.scale.set(40,40,170);
 
                 scene1.add( object );
             }, onProgress, onError );
         });
     }
+
+    mtlLoader.load('lightbulb.mtl', function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'models/' );
+        objLoader.load( 'lightbulb.obj', function ( object ) {
+
+
+
+            object.traverse( function ( child ) {
+
+
+
+                if ( child instanceof THREE.Mesh ) {
+
+
+
+                    bulb = child;
+
+                    child.material.emissive.setHex(0xFF0000);
+                    child.material.color.setHex(0x00FF00);
+                }
+            } );
+
+            object.position.x =100;
+            object.position.y = 200;
+            object.position.z = 200;
+
+            object.rotation.x = -Math.PI;
+
+
+            object.scale.set(3,3,3);
+
+            scene1.add( object );
+        }, onProgress, onError );
+    });
+
+
+
+    mtlLoader.load('snowman.mtl', function( materials ) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'models/' );
+        objLoader.load( 'snowman.obj', function ( object ) {
+
+            object.position.x = -300;
+            object.position.y = -100;
+            object.position.z = 0;
+
+            object.scale.set(20,20,20);
+
+
+            scene1.add( object );
+        }, onProgress, onError );
+    });
 
     var manager = new THREE.LoadingManager();
 
@@ -227,6 +329,9 @@ window.onload = function(){
 
         ball_mesh = object;
 
+
+
+
         refreshTree();
 
         animate();
@@ -259,6 +364,11 @@ function render() {
     //camera.position.y = THREE.Math.clamp( camera.position.y + ( - ( mouseY - 200 ) - camera.position.y ) * .05, 50, 1000 );
 
     //camera.lookAt( scene1.position );
+
+    if(bulb){
+        bulb.material.emissive.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
+        bulb.material.color.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
+    }
 
     particleSystem.rotation.x += 0.01;
 

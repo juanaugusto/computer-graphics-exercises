@@ -48,11 +48,14 @@ var direcionalLight;
 
 //var android;
 
-var  list_aleatorios = [];
-
 var acesso = -1;
 
 var ball_mesh = null;
 
 var onProgress, onError;
 
+//var mtlLoader;
+
+var acesso2 = -1;
+
+var bulb = null;
