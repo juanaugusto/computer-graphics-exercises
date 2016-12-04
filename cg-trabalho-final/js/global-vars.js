@@ -46,7 +46,13 @@ var particleLight;
 var pointLight;
 var direcionalLight;
 
-var android;
+//var android;
 
 var  list_aleatorios = [];
+
+var acesso = -1;
+
+var ball_mesh = null;
+
+var onProgress, onError;
 

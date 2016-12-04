@@ -149,13 +149,13 @@ window.onload = function(){
 
     // model
 
-    var onProgress = function ( xhr ) {
+    onProgress = function ( xhr ) {
         if ( xhr.lengthComputable ) {
             var percentComplete = xhr.loaded / xhr.total * 100;
             console.log( Math.round(percentComplete, 2) + '% downloaded' );
         }
     };
-    var onError = function ( xhr ) { };
+    onError = function ( xhr ) { };
     THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath( 'models/' );
@@ -163,49 +163,83 @@ window.onload = function(){
     var files_gift_box_colors = ['gift_box_red.mtl', 'gift_box_blue.mtl', 'gift_box_green.mtl', 'gift_box_golden.mtl'];
 
     var gift_box_positions = [
-        [100,-100,-100],
-        [-100,-100,-100],
-        [-100,-100,100],
-        [100,-100,100]
+        [100,-150,-100],
+        [-100,-150,-100],
+        [-100,-150,100],
+        [100,-150,100]
 
 
     ];
 
     var i;
     for (i = 0; i<files_gift_box_colors.length; i++){
-        mtlLoader.load(files_gift_box_colors[i], function( materials ) {
+
+            mtlLoader.load(files_gift_box_colors[i], function( materials ) {
             materials.preload();
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials( materials );
             objLoader.setPath( 'models/' );
             objLoader.load( 'gift_box.obj', function ( object ) {
-                var acesso = gera_aleatorio();
+                acesso++;
                 object.position.x = gift_box_positions[acesso][0];
                 object.position.y = gift_box_positions[acesso][1];
                 object.position.z = gift_box_positions[acesso][2];
+
+                object.rotation.x = -Math.PI / 2;
+
+                object.scale.set(0.8,0.8,0.8);
+
                 scene1.add( object );
             }, onProgress, onError );
         });
     }
 
+    var manager = new THREE.LoadingManager();
+
+    var texture = new THREE.Texture();
+
+    var loader = new THREE.ImageLoader( manager );
+    loader.load( 'textures/ball.jpg', function ( image ) {
+
+        texture.image = image;
+        texture.needsUpdate = true;
+
+    } );
+
+    var loader = new THREE.OBJLoader( manager );
+    loader.load( 'models/ball.obj', function ( object ) {
+
+        object.traverse( function ( child ) {
+
+            if ( child instanceof THREE.Mesh ) {
+
+                child.material.map = texture;
+
+            }
+
+        } );
+
+        object.position.y = - 95;
+        object.position.x = - 155;
+        object.scale.set(0.1,0.1,0.1);
+
+        //scene1.add( object );
+
+        ball_mesh = object;
+
+        refreshTree();
+
+        animate();
 
 
 
-    animate();
+    }, onProgress, onError );
+
+
+
 
 };
 
-function gera_aleatorio(){
-    var k = Math.floor(Math.random() * 4);
-
-    while(list_aleatorios.indexOf(k)){
-        k = Math.floor(Math.random() * 4);
-    }
-    list_aleatorios.push(k);
-
-    return k;
-
-}
 
 function animate() {
 
@@ -232,7 +266,7 @@ function render() {
 
 
 
-    refreshTree();
+    //refreshTree();
 
     //treeGroup.rotation.y -= clock.getDelta() * 0.5;
 
@@ -256,6 +290,7 @@ function makeSection(botWidth, topWidth, height, translateY, shiftX, shiftY){
 
     for(var xx=-1; xx <= 1; xx+=2){
         var v1 = new THREE.Vector3(xx*botWidth/2         , 0      + translateY, -botWidth/2);
+        console.log(v1);
         var v2 = new THREE.Vector3(xx*topWidth/2 + shiftX, height + translateY, -topWidth/2  + shiftY);
         var v3 = new THREE.Vector3(xx*topWidth/2 + shiftX, height + translateY,  topWidth/2  + shiftY);
         var v4 = new THREE.Vector3(xx*botWidth/2         , 0      + translateY,  botWidth/2);
@@ -329,13 +364,21 @@ function makeTree(scene){
         }
         else{
             geom = makeSection(botWidth, topWidth, height,currentHeight, 0, 0);
+
+
+
+
         }
+
+
 
         var cube = new THREE.Mesh(geom, cubeMaterial);
 
         //Main rotation (original before spin)
         //cube.rotation.y = Math.PI * (Math.random() * 90) / 180;
         //console.log(currentHeight);
+
+
         for(var idx in cube.vertices){
             cube.vertices[idx].position.y += currentHeight;
         }
@@ -345,8 +388,44 @@ function makeTree(scene){
         cube.receiveShadow = false;
 
 
+
         //Add the cube to the scene
         scene.add(cube);
+
+        if(!isTrunk){
+            var i = 0;
+
+            var min = 0;
+
+            for (i=0; i< geom.vertices.length; i=i+1){
+
+                var v = geom.vertices[i];
+
+                if (i==0){
+                    min = v.y;
+                }else{
+                    if (v.y<min){
+                        min = v.y;
+                    }
+                }
+
+            }
+
+
+            for (i=0; i< geom.vertices.length; i=i+1){
+
+                var v = geom.vertices[i];
+
+                var bm = ball_mesh.clone();
+                if(v.y == min){
+                    bm.position.set(v.x, v.y, v.z);
+                }
+                scene.add(bm);
+
+            }
+
+        }
+
     }
 
     // add the star
