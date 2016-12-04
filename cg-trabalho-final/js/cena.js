@@ -147,10 +147,65 @@ window.onload = function(){
     directionalLight.position.set(10, 1, 1).normalize();
     treeGroup.add(directionalLight);
 
+    // model
+
+    var onProgress = function ( xhr ) {
+        if ( xhr.lengthComputable ) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+        }
+    };
+    var onError = function ( xhr ) { };
+    THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+    var mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setPath( 'models/' );
+
+    var files_gift_box_colors = ['gift_box_red.mtl', 'gift_box_blue.mtl', 'gift_box_green.mtl', 'gift_box_golden.mtl'];
+
+    var gift_box_positions = [
+        [100,-100,-100],
+        [-100,-100,-100],
+        [-100,-100,100],
+        [100,-100,100]
+
+
+    ];
+
+    var i;
+    for (i = 0; i<files_gift_box_colors.length; i++){
+        mtlLoader.load(files_gift_box_colors[i], function( materials ) {
+            materials.preload();
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials( materials );
+            objLoader.setPath( 'models/' );
+            objLoader.load( 'gift_box.obj', function ( object ) {
+                var acesso = gera_aleatorio();
+                object.position.x = gift_box_positions[acesso][0];
+                object.position.y = gift_box_positions[acesso][1];
+                object.position.z = gift_box_positions[acesso][2];
+                scene1.add( object );
+            }, onProgress, onError );
+        });
+    }
+
+
+
+
     animate();
 
 };
 
+function gera_aleatorio(){
+    var k = Math.floor(Math.random() * 4);
+
+    while(list_aleatorios.indexOf(k)){
+        k = Math.floor(Math.random() * 4);
+    }
+    list_aleatorios.push(k);
+
+    return k;
+
+}
 
 function animate() {
 
@@ -397,5 +452,8 @@ function addBranch(count, x, y, z, opts, material, rotate, scene) {
 
     return scene;
 }
+
+
+
 
 

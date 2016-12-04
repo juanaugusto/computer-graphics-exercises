@@ -16,7 +16,7 @@ var mesh;
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
-var container,stats;
+var container, stats;
 
 var mouseX = 0, mouseY = 0;
 
@@ -45,3 +45,8 @@ var targetRotationOnMouseDown;
 var particleLight;
 var pointLight;
 var direcionalLight;
+
+var android;
+
+var  list_aleatorios = [];
+
