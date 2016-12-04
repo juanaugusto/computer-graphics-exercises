@@ -7,7 +7,7 @@ window.onload = function(){
     treeGroup = new THREE.Group();
 
     scene1 = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    //camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -15,8 +15,9 @@ window.onload = function(){
 
     //
 
-    camera = new THREE.PerspectiveCamera( 35, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 25000 );
-    camera.position.z = 1500;
+    camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.set(0, 100, 500);
+    //camera.position.z = 1500;
 
     scene1 = new THREE.Scene();
 
@@ -51,11 +52,15 @@ window.onload = function(){
     //
     //var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
 
-    var geometry = new THREE.PlaneBufferGeometry(200,200);
-    var mesh1 = new THREE.Mesh( geometry, material1 );
-    mesh1.rotation.x = - Math.PI / 2;
-    mesh1.scale.set( 1000, 1000, 1000 );
+    //var geometry = new THREE.PlaneBufferGeometry(200,200);
 
+    var geometry = new THREE.PlaneGeometry(20000,20000);
+    var mesh1 = new THREE.Mesh( geometry, material1 );
+    //mesh1.rotation.x = - Math.PI / 2;
+    //mesh1.scale.set( 1000, 1000, 1000 );
+
+    mesh1.position.y = - 150;
+    mesh1.rotation.x = - Math.PI/2;
     scene1.add( mesh1 );
 
 
@@ -112,7 +117,6 @@ window.onload = function(){
     renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
     renderer.autoClear = false;
 
-    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 
     var audio = document.createElement('audio');
@@ -120,6 +124,28 @@ window.onload = function(){
     source.src = 'sounds/christmas.mp3';
     audio.appendChild(source);
     //audio.play();
+
+    document.addEventListener('mousedown', onDocumentMouseDown, false);
+    document.addEventListener('touchstart', onDocumentTouchStart, false);
+    document.addEventListener('touchmove', onDocumentTouchMove, false);
+
+    scene1.add( new THREE.AmbientLight(0x222222));
+
+    // add particle of light
+    particleLight = new THREE.Mesh( new THREE.SphereGeometry(5, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    particleLight.position.y = 250;
+    treeGroup.add(particleLight);
+
+    // add flying pint light
+    pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+    treeGroup.add(pointLight);
+
+    pointLight.position = particleLight.position;
+
+    // add directional blue light
+    directionalLight = new THREE.DirectionalLight(0x0000ff, 2);
+    directionalLight.position.set(10, 1, 1).normalize();
+    treeGroup.add(directionalLight);
 
     animate();
 
@@ -140,10 +166,10 @@ function animate() {
 }
 
 function render() {
-    camera.position.x += ( mouseX - camera.position.x ) * .05;
-    camera.position.y = THREE.Math.clamp( camera.position.y + ( - ( mouseY - 200 ) - camera.position.y ) * .05, 50, 1000 );
+    //camera.position.x += ( mouseX - camera.position.x ) * .05;
+    //camera.position.y = THREE.Math.clamp( camera.position.y + ( - ( mouseY - 200 ) - camera.position.y ) * .05, 50, 1000 );
 
-    camera.lookAt( scene1.position );
+    //camera.lookAt( scene1.position );
 
     particleSystem.rotation.x += 0.01;
 
@@ -153,33 +179,21 @@ function render() {
 
     refreshTree();
 
-    treeGroup.rotation.y -= clock.getDelta() * 0.5;
+    //treeGroup.rotation.y -= clock.getDelta() * 0.5;
 
-    // renderer.setScissorTest( true );
+    var timer = Date.now() * 0.00025;
+    treeGroup.rotation.y += (targetRotation - treeGroup.rotation.y) * 0.01;
+    //particleLight.position.x = Math.sin(timer * 7) * 300;
+    //particleLight.position.z = Math.cos(timer * 3) * 300;
+    camera.position.x = Math.cos(timer) * 1000;
+    camera.position.z = Math.sin(timer) * 500;
+    camera.lookAt(scene1.position);
 
-    //renderer.setScissor( 0, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT );
     renderer.render( scene1, camera );
 
-    //renderer.setScissor( SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT  );
-   // renderer.render( scene2, camera );
-
-   // renderer.setScissorTest( false );
-
-    //requestAnimationFrame( render );
-
-    //renderer.render( scene, camera );
-}
-
-function onDocumentMouseMove(event) {
-
-    mouseX = ( event.clientX - windowHalfX );
-    mouseY = ( event.clientY - windowHalfY );
 
 }
 
-function getRandomIntInclusive(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 function makeSection(botWidth, topWidth, height, translateY, shiftX, shiftY){
     var geom = new THREE.Geometry();
@@ -214,29 +228,6 @@ function makeSection(botWidth, topWidth, height, translateY, shiftX, shiftY){
     return geom;
 }
 
-function generateRandomIntSet(lower, upper, count){
-    var items = [];
-    for(var hi = 0; hi < count; hi++){
-        items.push(getRandomIntInclusive(lower,upper));
-    }
-    items.sort(compareNumbers);
-    //items.reverse();
-
-    return (items);
-}
-function compareNumbers(a, b){  return a - b; }
-
-function createGoldenSet(start, count){
-    var GR = 1.618;
-    var grSet = [start];
-    var currentValue = start;
-    for(var index = 0; index < count; index++){
-        // some variance on the Golden ration
-        currentValue *= (GR + Math.random()/2-0.25);
-        grSet.push(currentValue);
-    }
-    return grSet;
-}
 
 function makeTree(scene){
 
@@ -252,7 +243,9 @@ function makeTree(scene){
 
     //var heights = [ 80,80,80,80,80,80,80];
     var currentHeight = 0;//-heights[0] / 2;
-    var widths = [372.245046479392,252.19076427505215 ,149.88792298482537, 101.9350748994837,71.37881792953567, 39.041810196524466, 25,0];
+    //var widths = [372.245046479392,252.19076427505215 ,149.88792298482537, 101.9350748994837,71.37881792953567, 39.041810196524466, 25,0];
+
+    var widths = [372.245046479392,156.19076427505215 ,149.88792298482537, 101.9350748994837,71.37881792953567, 39.041810196524466, 25,0];
 
     //console.log(heights);
 
@@ -301,6 +294,24 @@ function makeTree(scene){
         scene.add(cube);
     }
 
+    // add the star
+    var starOpts = {
+        amount: 4,
+        bevelEnabled: false
+    };
+
+    var imgTexture = textureLoader.load('img/star-texture.jpg');
+    imgTexture.wrapS = imgTexture.wrapT = THREE.RepeatWrapping;
+    imgTexture.anisotropy = 16;
+    imgTexture.needsUpdate = true;
+
+    var shading = THREE.SmoothShading;
+
+    var material_star = new THREE.MeshLambertMaterial({color: 0xC80815    });
+
+    //var material_star =  new THREE.MeshPhongMaterial( {color: 0xff0000, ambient: 0xffffff } );
+    scene = addBranch(5, 0, 420, -2, starOpts, material_star, false, scene);
+
     return scene;
     //scene.position.y = - currentHeight/2;
 
@@ -312,7 +323,79 @@ function refreshTree(){
     treeGroup = new THREE.Group();
     treeGroup = makeTree(treeGroup);
     treeGroup.rotation.y = rotY;
+
+    treeGroup.translateY(-210);
     scene1.add(treeGroup);
+}
+
+
+
+function onDocumentMouseDown(event) {
+    event.preventDefault();
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+    document.addEventListener('mouseup', onDocumentMouseUp, false);
+    document.addEventListener('mouseout', onDocumentMouseOut, false);
+    mouseXOnMouseDown = event.clientX - windowHalfX;
+    targetRotationOnMouseDown = targetRotation;
+}
+function onDocumentMouseMove(event) {
+    mouseX = event.clientX - windowHalfX;
+    targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+}
+function onDocumentMouseUp(event) {
+    document.removeEventListener('mousemove', onDocumentMouseMove, false);
+    document.removeEventListener('mouseup', onDocumentMouseUp, false);
+    document.removeEventListener('mouseout', onDocumentMouseOut, false);
+}
+function onDocumentMouseOut(event) {
+    document.removeEventListener('mousemove', onDocumentMouseMove, false);
+    document.removeEventListener('mouseup', onDocumentMouseUp, false);
+    document.removeEventListener('mouseout', onDocumentMouseOut, false);
+}
+function onDocumentTouchStart(event) {
+    if (event.touches.length == 1) {
+        event.preventDefault();
+        mouseXOnMouseDown = event.touches[0].pageX - windowHalfX;
+        targetRotationOnMouseDown = targetRotation;
+    }
+}
+function onDocumentTouchMove(event) {
+    if (event.touches.length == 1) {
+        event.preventDefault();
+        mouseX = event.touches[0].pageX - windowHalfX;
+        targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+    }
+}
+
+function addBranch(count, x, y, z, opts, material, rotate, scene) {
+// prepare star-like points
+    var points = [], l;
+    for (i = 0; i < count * 2; i++) {
+        if (i % 2 == 1) {
+            l = count * 2;
+        } else {
+            l = count * 4;
+        }
+        var a = i / count * Math.PI;
+        points.push( new THREE.Vector2(Math.cos(a) * l, Math.sin(a) * l));
+    }
+    var branchShape = new THREE.Shape(points);
+    var branchGeometry = new THREE.ExtrudeGeometry(branchShape, opts);
+    var branchMesh = new THREE.Mesh(branchGeometry, material);
+    branchMesh.position.set(x, y, z);
+    // rotate 90 degrees
+    if (rotate) {
+        branchMesh.rotation.set(Math.PI / 2, 0, 0);
+    } else {
+        branchMesh.rotation.set(0, 0, Math.PI / 2);
+    }
+    //add shadows
+    branchMesh.castShadow = true;
+    branchMesh.receiveShadow = false;
+    // add branch to the group
+    scene.add(branchMesh);
+
+    return scene;
 }
 
 

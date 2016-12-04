@@ -36,3 +36,12 @@ var clock;
 var treeGroup;
 
 var sections, heights, widths;
+
+var targetRotation = 0;
+
+var mouseXOnMouseDown;
+var targetRotationOnMouseDown;
+
+var particleLight;
+var pointLight;
+var direcionalLight;
