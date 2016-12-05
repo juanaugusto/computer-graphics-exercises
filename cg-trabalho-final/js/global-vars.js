@@ -4,8 +4,7 @@
 
  */
 
-var scene1;
-var scene2;
+var scene;
 var camera;
 var renderer;
 
@@ -13,12 +12,10 @@ var geometry;
 var material;
 var cube;
 
-var mesh;
-
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
-var container, stats;
+var container;
 
 var mouseX = 0, mouseY = 0;
 
@@ -37,31 +34,22 @@ var clock;
 
 var treeGroup;
 
-var sections, heights, widths;
-
 var targetRotation = 0;
 
-var mouseXOnMouseDown;
-var targetRotationOnMouseDown;
+var mouseXOnMouseDown = 0;
+var targetRotationOnMouseDown = 0;
 
 var particleLight;
 var pointLight;
-var direcionalLight;
 
-//var android;
 
 var acesso = -1;
 
 var ball_mesh = null;
 
-var onProgress, onError;
-
-//var mtlLoader;
-
 var acesso2 = -1;
 
 var bulb = null;
-var textureBulb = null;
 
 var bulb_mesh = null;
 
@@ -83,6 +71,8 @@ var bulb_positions = [
     [200,293,0],
     [250,293,0],
     [300,293,0],
-    [350,293,0],
+    [350,293,0]
 ];
+
+
 
