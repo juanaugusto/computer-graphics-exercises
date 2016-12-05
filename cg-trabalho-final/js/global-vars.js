@@ -61,5 +61,26 @@ var acesso2 = -1;
 var bulb = null;
 var textureBulb = null;
 
+var bulb_mesh = null;
+
 var texture_blue_bulb, texture_green_bulb, texture_red_bulb;
+
+var bulb_positions = [
+
+    [-350,293,0],
+    [-300,293,0],
+    [-250,293,0],
+    [-200,293,0],
+    [-150,293,0],
+    [-100,293,0],
+    [-50,293,0],
+    [0,293,0],
+    [50,293,0],
+    [100,293,0],
+    [150,293,0],
+    [200,293,0],
+    [250,293,0],
+    [300,293,0],
+    [350,293,0],
+];
 

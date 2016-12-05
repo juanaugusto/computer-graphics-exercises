@@ -214,8 +214,9 @@ window.onload = function(){
     });
 
     var spear_positions = [
-        [400,0,0],
-        [-400,0,0]
+        [400,0,0,0],
+        [-400,0,0,0],
+        [0,293,0,Math.PI/2]
     ];
 
     for (i = 0; i<spear_positions.length; i++){
@@ -231,9 +232,18 @@ window.onload = function(){
                 object.position.y =spear_positions[acesso2][1];
                 object.position.z = spear_positions[acesso2][2];
 
-                object.rotation.x = -Math.PI/2;
+                if(spear_positions[acesso2][3]!=0){
+                    object.scale.set(40,40,233);
+                    object.rotation.y = spear_positions[acesso2][3];
 
-                object.scale.set(40,40,170);
+
+                }else{
+                    object.rotation.x = -Math.PI/2;
+                    object.scale.set(40,40,170);
+
+
+                }
+
 
                 scene1.add( object );
             }, onProgress, onError );
@@ -405,16 +415,23 @@ window.onload = function(){
 
         //object.position.y = - 95;
         //object.position.x = - 155;
-        object.scale.set(9,9,9);
+        object.scale.set(3,3,3);
 
         //scene1.add( object );
 
         //ball_mesh = object;
-        object.position.x =100;
-        object.position.y = 200;
-        object.position.z = 200;
+        object.rotation.x = Math.PI;
 
-        scene1.add(object);
+        bulb_mesh = object;
+
+        //scene1.add(object);
+
+        for (var i =0 ;i<bulb_positions.length; i++){
+            var bm = bulb_mesh.clone();
+            bm.position.set(bulb_positions[i][0],bulb_positions[i][1],bulb_positions[i][2]);
+            scene1.add(bm);
+
+        }
 
 
         refreshTree();
@@ -479,13 +496,19 @@ function render() {
 
         var array_tex = [texture_red_bulb, texture_blue_bulb, texture_green_bulb];
 
-
-        var text_rand = array_tex[parseInt(Math.random()*3)];
-        for(var i=0; i<scene1.children[13].children.length; i++){
-            scene1.children[13].children[i].material.map = text_rand;
-            scene1.children[13].children[i].material.needsUpdate = true;
-
+        for(var i = 14; i<29; i++){
+            var text_rand = array_tex[parseInt(Math.random()*3)];
+            for(var j=0; j<scene1.children[i].children.length; j++){
+                    scene1.children[i].children[j].material.map = text_rand;
+                    scene1.children[i].children[j].material.needsUpdate = true;
+            }
         }
+
+        // for(var i=0; i<scene1.children[14].children.length; i++){
+        //     scene1.children[14].children[i].material.map = text_rand;
+        //     scene1.children[14].children[i].material.needsUpdate = true;
+        //
+        // }
 
         //bulb.material.update();
 
