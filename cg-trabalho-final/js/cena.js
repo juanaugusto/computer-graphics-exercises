@@ -1,5 +1,6 @@
-/**
- * Created by jaugusto on 12/3/16.
+/*
+    Nome(s): Jéssica Genta dos Santos - 111031073
+             Juan Augusto Santos de Paula - 111222844
  */
 
 window.onload = function(){
@@ -44,7 +45,7 @@ window.onload = function(){
 
     texture1.anisotropy = maxAnisotropy;
     texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-    texture1.repeat.set(25, 25 );
+    texture1.repeat.set(100, 100);
 
 
 
@@ -54,12 +55,13 @@ window.onload = function(){
 
     //var geometry = new THREE.PlaneBufferGeometry(200,200);
 
-    var geometry = new THREE.PlaneGeometry(20000,20000);
+    //var geometry = new THREE.PlaneGeometry(20000,20000);
+    var geometry = new THREE.PlaneGeometry(1000,1000);
     var mesh1 = new THREE.Mesh( geometry, material1 );
     //mesh1.rotation.x = - Math.PI / 2;
     //mesh1.scale.set( 1000, 1000, 1000 );
 
-    mesh1.position.y = - 150;
+    mesh1.position.y = - 200;
     mesh1.rotation.x = - Math.PI/2;
     scene1.add( mesh1 );
 
@@ -125,7 +127,7 @@ window.onload = function(){
     var source = document.createElement('source');
     source.src = 'sounds/christmas.mp3';
     audio.appendChild(source);
-    //audio.play();
+    audio.play();
 
     document.addEventListener('mousedown', onDocumentMouseDown, false);
     document.addEventListener('touchstart', onDocumentTouchStart, false);
@@ -165,10 +167,10 @@ window.onload = function(){
     var files_gift_box_colors = ['gift_box_red.mtl', 'gift_box_blue.mtl', 'gift_box_green.mtl', 'gift_box_golden.mtl'];
 
     var gift_box_positions = [
-        [100,-150,-100],
-        [-100,-150,-100],
-        [-100,-150,100],
-        [100,-150,100]
+        [100,-200,-100],
+        [-100,-200,-100],
+        [-100,-200,100],
+        [100,-200,100]
 
 
     ];
@@ -204,7 +206,7 @@ window.onload = function(){
         objLoader.load( 'snowman.obj', function ( object ) {
 
             object.position.x = -300;
-            object.position.y = -100;
+            object.position.y = -150;
             object.position.z = 0;
 
             object.scale.set(20,20,20);
@@ -332,6 +334,8 @@ window.onload = function(){
     texture_blue_bulb.wrapT = THREE.RepeatWrapping;
     texture_blue_bulb.repeat.set( 4, 4 );
 
+
+
     // new THREE.ImageLoader(manager).load( 'textures/red_light.jpg', function ( image ) {
     //     //texture_red_bulb.color.wrapS =  texture_red_bulb.color.wrapT = THREE.RepeatWrapping;
     //     //texture_red_bulb.repeat.set( 2, 2);
@@ -378,8 +382,8 @@ window.onload = function(){
 
         } );
 
-        object.position.y = - 95;
-        object.position.x = - 155;
+        object.position.y = 150;
+        object.position.x = 0;
         object.scale.set(0.1,0.1,0.1);
 
         //scene1.add( object );
@@ -435,7 +439,26 @@ window.onload = function(){
         }
 
 
+
         refreshTree();
+
+        var imagePrefix = "img/skybox/";
+        var directions  = ["posx", "negx", "posy", "negy", "posz", "negz"];
+        var imageSuffix = ".jpg";
+        var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+
+        var materialArray = [];
+        for (var i = 0; i < 6; i++)
+            materialArray.push( new THREE.MeshBasicMaterial({
+                map: new THREE.TextureLoader().load( imagePrefix + directions[i] + imageSuffix ),
+                side: THREE.BackSide
+            }));
+        var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+        var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+
+        scene1.add( skyBox );
+
+
 
         animate();
 
@@ -528,6 +551,10 @@ function render() {
     camera.position.z = Math.sin(timer) * 500;
     camera.lookAt(scene1.position);
 
+
+
+
+
     renderer.render( scene1, camera );
 
 
@@ -615,34 +642,6 @@ function makeTree(scene){
         else{
             geom = makeSection(botWidth, topWidth, height,currentHeight, 0, 0);
 
-
-
-
-        }
-
-
-
-        var cube = new THREE.Mesh(geom, cubeMaterial);
-
-        //Main rotation (original before spin)
-        //cube.rotation.y = Math.PI * (Math.random() * 90) / 180;
-        //console.log(currentHeight);
-
-
-        for(var idx in cube.vertices){
-            cube.vertices[idx].position.y += currentHeight;
-        }
-
-        //add shadows
-        cube.castShadow = true;
-        cube.receiveShadow = false;
-
-
-
-        //Add the cube to the scene
-        scene.add(cube);
-
-        if(!isTrunk){
             var i = 0;
 
             var min = 0;
@@ -673,6 +672,34 @@ function makeTree(scene){
                 scene.add(bm);
 
             }
+
+
+        }
+
+
+
+        var cube = new THREE.Mesh(geom, cubeMaterial);
+
+        //Main rotation (original before spin)
+        //cube.rotation.y = Math.PI * (Math.random() * 90) / 180;
+        //console.log(currentHeight);
+
+
+        for(var idx in cube.vertices){
+            cube.vertices[idx].position.y += currentHeight;
+        }
+
+        //add shadows
+        cube.castShadow = true;
+        cube.receiveShadow = false;
+
+
+
+        //Add the cube to the scene
+        scene.add(cube);
+
+        if(!isTrunk){
+
 
         }
 
@@ -708,7 +735,9 @@ function refreshTree(){
     treeGroup = makeTree(treeGroup);
     treeGroup.rotation.y = rotY;
 
-    treeGroup.translateY(-210);
+
+    treeGroup.translateY(-240);
+
     scene1.add(treeGroup);
 }
 

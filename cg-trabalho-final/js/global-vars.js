@@ -1,5 +1,7 @@
-/**
- * Created by jaugusto on 12/3/16.
+/*
+ Nome(s): Jéssica Genta dos Santos - 111031073
+ Juan Augusto Santos de Paula - 111222844
+
  */
 
 var scene1;
