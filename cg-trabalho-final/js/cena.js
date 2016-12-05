@@ -69,17 +69,18 @@ window.onload = function(){
     particles = new THREE.Geometry();
 
     //var textureSnow = new THREE.TextureLoader().load( "img/particle.jpg" );
-    var textureSnow = new THREE.TextureLoader().load( "img/snowflake.png" );
-    textureSnow.wrapS = THREE.RepeatWrapping;
-    textureSnow.wrapT = THREE.RepeatWrapping;
-    textureSnow.repeat.set( 4, 4 );
+    var textureSnow = new THREE.TextureLoader().load( "img/particle.png" );
+    // textureSnow.wrapS = THREE.RepeatWrapping;
+    // textureSnow.wrapT = THREE.RepeatWrapping;
+    //textureSnow.repeat.set( 4, 4 );
 
 
     var pMaterial = new THREE.PointsMaterial({
             color: 0xFFFFFF,
-            size: 20,
-            map:textureSnow,
+            size: 25,
+            map: new THREE.TextureLoader().load( "img/snowflake.jpg" ),
             blending: THREE.AdditiveBlending,
+            depthTest: false,
             transparent: true
         });
 
