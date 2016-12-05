@@ -59,3 +59,7 @@ var onProgress, onError;
 var acesso2 = -1;
 
 var bulb = null;
+var textureBulb = null;
+
+var texture_blue_bulb, texture_green_bulb, texture_red_bulb;
+

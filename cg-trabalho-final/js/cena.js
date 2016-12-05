@@ -68,7 +68,8 @@ window.onload = function(){
     particleCount = 1800;
     particles = new THREE.Geometry();
 
-    var textureSnow = new THREE.TextureLoader().load( "img/particle.jpg" );
+    //var textureSnow = new THREE.TextureLoader().load( "img/particle.jpg" );
+    var textureSnow = new THREE.TextureLoader().load( "img/snowflake.png" );
     textureSnow.wrapS = THREE.RepeatWrapping;
     textureSnow.wrapT = THREE.RepeatWrapping;
     textureSnow.repeat.set( 4, 4 );
@@ -239,42 +240,43 @@ window.onload = function(){
         });
     }
 
-    mtlLoader.load('lightbulb.mtl', function( materials ) {
-        materials.preload();
-        var objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials( materials );
-        objLoader.setPath( 'models/' );
-        objLoader.load( 'lightbulb.obj', function ( object ) {
-
-
-
-            object.traverse( function ( child ) {
-
-
-
-                if ( child instanceof THREE.Mesh ) {
-
-
-
-                    bulb = child;
-
-                    child.material.emissive.setHex(0xFF0000);
-                    child.material.color.setHex(0x00FF00);
-                }
-            } );
-
-            object.position.x =100;
-            object.position.y = 200;
-            object.position.z = 200;
-
-            object.rotation.x = -Math.PI;
-
-
-            object.scale.set(3,3,3);
-
-            scene1.add( object );
-        }, onProgress, onError );
-    });
+    // mtlLoader.load('lightbulb.mtl', function( materials ) {
+    //     materials.preload();
+    //     var objLoader = new THREE.OBJLoader();
+    //     objLoader.setMaterials( materials );
+    //     objLoader.setPath( 'models/' );
+    //     objLoader.load( 'lightbulb.obj', function ( object ) {
+    //
+    //
+    //
+    //         object.traverse( function ( child ) {
+    //
+    //
+    //
+    //             if ( child instanceof THREE.Mesh ) {
+    //
+    //
+    //
+    //                 bulb = child;
+    //
+    //                 child.material.emissive.setHex(0xFF0000);
+    //                 child.material.color.setHex(0x00FF00);
+    //             }
+    //         } );
+    //
+    //         object.position.x =100;
+    //         object.position.y = 200;
+    //         object.position.z = 200;
+    //
+    //         object.rotation.x = -Math.PI;
+    //
+    //
+    //         object.scale.set(3,3,3);
+    //         object.scale.set(10,10,10);
+    //
+    //         scene1.add( object );
+    //     }, onProgress, onError );
+    // });
 
 
 
@@ -296,7 +298,51 @@ window.onload = function(){
         }, onProgress, onError );
     });
 
+    // texture_green_bulb  = new THREE.Texture();
+    // texture_blue_bulb  = new THREE.Texture();
+    // texture_red_bulb = new THREE.Texture();
+
     var manager = new THREE.LoadingManager();
+
+    //var loader = new THREE.ImageLoader( manager );
+
+    texture_red_bulb = new THREE.TextureLoader().load( "textures/red_light.jpg" );
+    texture_red_bulb.wrapS = THREE.RepeatWrapping;
+    texture_red_bulb.wrapT = THREE.RepeatWrapping;
+    texture_red_bulb.repeat.set( 4, 4 );
+
+    texture_green_bulb = new THREE.TextureLoader().load( "textures/green_light.jpg" );
+    texture_green_bulb.wrapS = THREE.RepeatWrapping;
+    texture_green_bulb.wrapT = THREE.RepeatWrapping;
+    texture_green_bulb.repeat.set( 4, 4 );
+
+    texture_blue_bulb = new THREE.TextureLoader().load( "textures/blue_light.jpg" );
+    texture_blue_bulb.wrapS = THREE.RepeatWrapping;
+    texture_blue_bulb.wrapT = THREE.RepeatWrapping;
+    texture_blue_bulb.repeat.set( 4, 4 );
+
+    // new THREE.ImageLoader(manager).load( 'textures/red_light.jpg', function ( image ) {
+    //     //texture_red_bulb.color.wrapS =  texture_red_bulb.color.wrapT = THREE.RepeatWrapping;
+    //     //texture_red_bulb.repeat.set( 2, 2);
+    //     texture_red_bulb.image = image;
+    //     texture_red_bulb.needsUpdate = true;
+    //
+    // } );
+    //
+    // new THREE.ImageLoader(manager).load( 'textures/green_light.jpg', function ( image ) {
+    //     //texture_gree_bulb.color.wrapS =  texture_green_bulb.color.wrapT = THREE.RepeatWrapping;
+    //     //texture_green_bulb.repeat.set( 2, 2);
+    //     texture_green_bulb.image = image;
+    //     texture_green_bulb.needsUpdate = true;
+    //
+    // } );
+    // new THREE.ImageLoader(manager).load( 'textures/blue_light.jpg', function ( image ) {
+    //     //texture_blue_bulb.color.wrapS =  texture_blue_bulb.color.wrapT = THREE.RepeatWrapping;
+    //     //texture_blue_bulb.repeat.set( 2, 2);
+    //     texture_blue_bulb.image = image;
+    //     texture_blue_bulb.needsUpdate = true;
+    //
+    // } );
 
     var texture = new THREE.Texture();
 
@@ -332,10 +378,48 @@ window.onload = function(){
 
 
 
+        // refreshTree();
+        //
+        // animate();
+
+
+
+    }, onProgress, onError );
+
+    var loader = new THREE.OBJLoader( manager );
+    loader.load( 'models/lightbulb.obj', function ( object ) {
+
+        object.traverse( function ( child ) {
+
+            if ( child instanceof THREE.Mesh ) {
+
+                child.material.map = texture_blue_bulb;
+                child.material.needsUpdate = true;
+
+
+                bulb = child;
+
+            }
+
+        } );
+
+        //object.position.y = - 95;
+        //object.position.x = - 155;
+        object.scale.set(9,9,9);
+
+        //scene1.add( object );
+
+        //ball_mesh = object;
+        object.position.x =100;
+        object.position.y = 200;
+        object.position.z = 200;
+
+        scene1.add(object);
+
+
         refreshTree();
 
         animate();
-
 
 
     }, onProgress, onError );
@@ -365,15 +449,47 @@ function render() {
 
     //camera.lookAt( scene1.position );
 
-    if(bulb){
-        bulb.material.emissive.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
-        bulb.material.color.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
-    }
+    renderer.clear();
 
     particleSystem.rotation.x += 0.01;
 
-    renderer.clear();
 
+    // if(bulb){
+    //     bulb.material.emissive.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
+    //     bulb.material.color.setHex(parseInt("0x"+Math.random().toString(16).substr(-6)));
+    //     bulb.geometry.colorsNeedUpdate = true;
+    // }
+
+    if(bulb){
+        // var manager = new THREE.LoadingManager();
+        //
+        // var loader = new THREE.ImageLoader( manager );
+        //
+        // var xx =  Math.random()*2;
+        //
+        // var str_tex;
+        // if(xx==1){
+        //     str_tex = 'textures/green_light.jpg';
+        //
+        // }else{
+        //     str_tex = 'textures/blue_light.jpg';
+        //
+        // }
+
+
+        var array_tex = [texture_red_bulb, texture_blue_bulb, texture_green_bulb];
+
+
+        var text_rand = array_tex[parseInt(Math.random()*3)];
+        for(var i=0; i<scene1.children[13].children.length; i++){
+            scene1.children[13].children[i].material.map = text_rand;
+            scene1.children[13].children[i].material.needsUpdate = true;
+
+        }
+
+        //bulb.material.update();
+
+    }
 
 
     //refreshTree();
