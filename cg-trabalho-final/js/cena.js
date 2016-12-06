@@ -18,6 +18,8 @@ window.onload = function () {
 
     scene = new THREE.Scene();
 
+    group_objects = new THREE.Group();
+
     scene.fog = new THREE.Fog(0x87ceeb, 1, 25000);
 
     scene.add(new THREE.AmbientLight(0xeef0ff));
@@ -42,7 +44,7 @@ window.onload = function () {
     var mesh_floor = new THREE.Mesh(geometry_floor, material_floor);
     mesh_floor.position.y = -200;
     mesh_floor.rotation.x = -Math.PI / 2;
-    scene.add(mesh_floor);
+    group_objects.add(mesh_floor);
 
 
     // create the particle variables
@@ -77,7 +79,7 @@ window.onload = function () {
 
     particleSystem.sortParticles = true;
 
-    scene.add(particleSystem);
+    group_objects.add(particleSystem);
 
     renderer.setClearColor(scene.fog.color);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -134,16 +136,16 @@ window.onload = function () {
             objLoader.setMaterials(materials);
             objLoader.setPath('models/');
             objLoader.load('gift_box.obj', function (object) {
-                acesso++;
-                object.position.x = gift_box_positions[acesso][0];
-                object.position.y = gift_box_positions[acesso][1];
-                object.position.z = gift_box_positions[acesso][2];
+                access_gift_box++;
+                object.position.x = gift_box_positions[access_gift_box][0];
+                object.position.y = gift_box_positions[access_gift_box][1];
+                object.position.z = gift_box_positions[access_gift_box][2];
 
                 object.rotation.x = -Math.PI / 2;
 
                 object.scale.set(0.8, 0.8, 0.8);
 
-                scene.add(object);
+                group_objects.add(object);
             }, onProgress, onError);
         });
     }
@@ -162,7 +164,7 @@ window.onload = function () {
             object.scale.set(20, 20, 20);
 
 
-            scene.add(object);
+            group_objects.add(object);
         }, onProgress, onError);
     });
 
@@ -179,15 +181,15 @@ window.onload = function () {
             objLoader.setMaterials(materials);
             objLoader.setPath('models/');
             objLoader.load('spear.obj', function (object) {
-                acesso2++;
+                access_spear++;
 
-                object.position.x = spear_positions[acesso2][0];
-                object.position.y = spear_positions[acesso2][1];
-                object.position.z = spear_positions[acesso2][2];
+                object.position.x = spear_positions[access_spear][0];
+                object.position.y = spear_positions[access_spear][1];
+                object.position.z = spear_positions[access_spear][2];
 
-                if (spear_positions[acesso2][3] != 0) {
+                if (spear_positions[access_spear][3] != 0) {
                     object.scale.set(40, 40, 233);
-                    object.rotation.y = spear_positions[acesso2][3];
+                    object.rotation.y = spear_positions[access_spear][3];
 
 
                 } else {
@@ -197,7 +199,7 @@ window.onload = function () {
 
                 }
 
-                scene.add(object);
+                group_objects.add(object);
             }, onProgress, onError);
         });
     }
@@ -216,7 +218,7 @@ window.onload = function () {
             object.scale.set(20, 20, 20);
 
 
-            scene.add(object);
+            group_objects.add(object);
         }, onProgress, onError);
     });
 
@@ -237,18 +239,35 @@ window.onload = function () {
     texture_blue_bulb.wrapT = THREE.RepeatWrapping;
     texture_blue_bulb.repeat.set(4, 4);
 
+    texture_black_bulb = new THREE.TextureLoader().load("textures/black_light.jpg");
+    texture_black_bulb.wrapS = THREE.RepeatWrapping;
+    texture_black_bulb.wrapT = THREE.RepeatWrapping;
+    texture_black_bulb.repeat.set(4, 4);
+
+    texture_yellow_bulb = new THREE.TextureLoader().load("textures/yellow_light.jpg");
+    texture_yellow_bulb.wrapS = THREE.RepeatWrapping;
+    texture_yellow_bulb.wrapT = THREE.RepeatWrapping;
+    texture_yellow_bulb.repeat.set(4, 4);
+
+    texture_purple_bulb = new THREE.TextureLoader().load("textures/purple_light.jpg");
+    texture_purple_bulb.wrapS = THREE.RepeatWrapping;
+    texture_purple_bulb.wrapT = THREE.RepeatWrapping;
+    texture_purple_bulb.repeat.set(4, 4);
+
     var texture = new THREE.Texture();
 
-    var loader = new THREE.ImageLoader(manager);
-    loader.load('textures/ball.jpg', function (image) {
+    var loaderImage = new THREE.ImageLoader(manager);
+    var loaderOBJ = new THREE.OBJLoader(manager);
+
+
+    loaderImage.load('textures/ball.jpg', function (image) {
 
         texture.image = image;
         texture.needsUpdate = true;
 
     });
 
-    var loader = new THREE.OBJLoader(manager);
-    loader.load('models/ball.obj', function (object) {
+    loaderOBJ.load('models/ball.obj', function (object) {
 
         object.traverse(function (child) {
 
@@ -271,56 +290,51 @@ window.onload = function () {
 
     }, onProgress, onError);
 
-    var loader = new THREE.OBJLoader(manager);
-    loader.load('models/lightbulb.obj', function (object) {
+    for (var l = 0; l < bulb_positions.length; l++) {
+        loaderOBJ.load('models/lightbulb.obj', function (object) {
 
-        object.traverse(function (child) {
+            access_bulb++;
 
-            if (child instanceof THREE.Mesh) {
+            object.scale.set(3, 3, 3);
 
-                child.material.map = texture_blue_bulb;
-                child.material.needsUpdate = true;
+            object.rotation.x = Math.PI;
 
-                bulb = child;
+            object.position.set(bulb_positions[access_bulb][0], bulb_positions[access_bulb][1], bulb_positions[access_bulb][2]);
+            group_objects.add(object);
 
+
+            if (access_bulb == bulb_positions.length - 1) {
+                treeGroup = makeTree();
+                group_objects.add(treeGroup);
+
+                var imagePrefix = "img/skybox/";
+                var directions = ["posx", "negx", "posy", "negy", "posz", "negz"];
+                var imageSuffix = ".jpg";
+                var skyGeometry = new THREE.CubeGeometry(5000, 5000, 5000);
+
+                var materialArray = [];
+                for (var i = 0; i < 6; i++)
+                    materialArray.push(new THREE.MeshBasicMaterial({
+                        map: new THREE.TextureLoader().load(imagePrefix + directions[i] + imageSuffix),
+                        side: THREE.BackSide
+                    }));
+                var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
+                var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
+
+                scene.add(skyBox);
+
+                // group_objects.translateY(-400);
+                // group_objects.translateX(-700);
+                // group_objects.translateZ(-700);
+
+                scene.add(group_objects);
+
+                setInterval(refresh_bulb, 1000);
+                animate();
             }
 
-        });
-
-        object.scale.set(3, 3, 3);
-
-        object.rotation.x = Math.PI;
-
-        bulb_mesh = object;
-
-        for (var i = 0; i < bulb_positions.length; i++) {
-            var bm = bulb_mesh.clone();
-            bm.position.set(bulb_positions[i][0], bulb_positions[i][1], bulb_positions[i][2]);
-            scene.add(bm);
-        }
-
-        treeGroup = makeTree();
-        scene.add(treeGroup);
-
-        var imagePrefix = "img/skybox/";
-        var directions = ["posx", "negx", "posy", "negy", "posz", "negz"];
-        var imageSuffix = ".jpg";
-        var skyGeometry = new THREE.CubeGeometry(5000, 5000, 5000);
-
-        var materialArray = [];
-        for (var i = 0; i < 6; i++)
-            materialArray.push(new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load(imagePrefix + directions[i] + imageSuffix),
-                side: THREE.BackSide
-            }));
-        var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
-        var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
-
-        scene.add(skyBox);
-
-        animate();
-
-    }, onProgress, onError);
+        }, onProgress, onError);
+    }
 
 };
 
@@ -334,11 +348,8 @@ function play_audio() {
 }
 
 function animate() {
-
     requestAnimationFrame(animate);
-
     render();
-
 }
 
 function render() {
@@ -346,25 +357,6 @@ function render() {
     renderer.clear();
 
     particleSystem.rotation.x += 0.01;
-
-    if (bulb) {
-        var array_tex = [texture_red_bulb, texture_blue_bulb, texture_green_bulb];
-
-        for (var i = 0; i < scene.children.length; i++) {
-            if(scene.children[i].children.length==8){
-                if(scene.children[i].children[0].name == "Lightbulb_bottom"){
-                    var text_rand = array_tex[parseInt(Math.random() * 3)];
-                    for (var j = 0; j < scene.children[i].children.length; j++) {
-                        scene.children[i].children[j].material.map = text_rand;
-                        scene.children[i].children[j].material.needsUpdate = true;
-                    }
-                }
-
-            }
-
-        }
-    }
-
     var timer = Date.now() * 0.00025;
     treeGroup.rotation.y += (targetRotation - treeGroup.rotation.y) * 0.01;
 
@@ -374,6 +366,43 @@ function render() {
 
     renderer.render(scene, camera);
 
+}
+
+function refresh_bulb() {
+
+    var array_tex = [texture_red_bulb, texture_blue_bulb, texture_green_bulb, texture_yellow_bulb, texture_purple_bulb];
+    var gr = null;
+    for (var k = 0; k < scene.children.length; k++) {
+        if (scene.children[k] instanceof THREE.Group) {
+            gr = scene.children[k];
+            break;
+        }
+    }
+
+    var cont = 0;
+    for (var i = 0; i < gr.children.length; i++) {
+        if (gr.children[i].children.length == 8) {
+            cont++;
+            var mesh_clone = gr.children[i].children[1].clone();
+
+            if (gr.children[i].children[0].name == "Lightbulb_bottom") {
+
+                var geo, mat, new_mesh;
+                for (var j = 0; j < gr.children[i].children.length; j++) {
+                    if (gr.children[i].children[j].name == "Lightbulb_bottom") {
+                        gr.children[i].children[j].material.map = texture_black_bulb;
+                        gr.children[i].children[j].material.needsUpdate = true;
+                    } else if (gr.children[i].children[j].name == "Lightbulb_Top") {
+                        gr.children[i].children[j].material.map = array_tex[parseInt(Math.random() * array_tex.length)];
+                        gr.children[i].children[j].material.needsUpdate = true;
+                    }
+                }
+
+            }
+
+        }
+
+    }
 }
 
 function makeSection(botWidth, topWidth, height, translateY, shiftX, shiftY) {
@@ -411,7 +440,6 @@ function makeSection(botWidth, topWidth, height, translateY, shiftX, shiftY) {
 
 
 function makeTree() {
-
     var group = new THREE.Group();
 
     var scale = 150;
@@ -492,13 +520,10 @@ function makeTree() {
         bevelEnabled: false
     };
 
-
     var shading = THREE.SmoothShading;
 
     var material_star = new THREE.MeshLambertMaterial({color: 0xC80815});
-
     group = addBranch(5, 0, 420, -2, starOpts, material_star, false, group);
-
     group.translateY(-240);
 
     return group;
@@ -585,7 +610,7 @@ var onProgress = function (xhr) {
     }
 };
 var onError = function (xhr) {
-
+    console.log("AJAX Error!!")
 };
 
 

@@ -8,10 +8,6 @@ var scene;
 var camera;
 var renderer;
 
-var geometry;
-var material;
-var cube;
-
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
@@ -42,18 +38,14 @@ var targetRotationOnMouseDown = 0;
 var particleLight;
 var pointLight;
 
-
-var acesso = -1;
+var access_gift_box = -1;
+var access_spear = -1;
+var access_bulb = -1;
 
 var ball_mesh = null;
 
-var acesso2 = -1;
-
-var bulb = null;
-
-var bulb_mesh = null;
-
-var texture_blue_bulb, texture_green_bulb, texture_red_bulb;
+var texture_blue_bulb, texture_green_bulb, texture_red_bulb, texture_yellow_bulb, texture_purple_bulb;
+var texture_black_bulb;
 
 var bulb_positions = [
 
@@ -73,6 +65,10 @@ var bulb_positions = [
     [300,293,0],
     [350,293,0]
 ];
+
+var group_objects;
+
+
 
 
 
