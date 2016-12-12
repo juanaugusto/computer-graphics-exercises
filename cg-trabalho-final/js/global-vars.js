@@ -68,6 +68,11 @@ var bulb_positions = [
 
 var group_objects;
 
+var snow_mesh;
+
+var positiveLeft = false;
+var positiveRight = false;
+
 
 
 

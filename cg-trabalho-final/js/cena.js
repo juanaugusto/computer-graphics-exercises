@@ -26,6 +26,10 @@ window.onload = function () {
 
     var light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(150, 100, 200);
+    light.castShadow = true;
+    light.shadowDarkness = 0.5;
+    light.shadowCameraVisible = true;
+
     scene.add(light);
 
     textureLoader = new THREE.TextureLoader();
@@ -92,6 +96,8 @@ window.onload = function () {
     document.addEventListener('touchstart', onDocumentTouchStart, false);
     document.addEventListener('touchmove', onDocumentTouchMove, false);
 
+    window.addEventListener('resize', onWindowResize, false);
+
     scene.add(new THREE.AmbientLight(0x222222));
 
     // add particle of light
@@ -157,14 +163,19 @@ window.onload = function () {
         objLoader.setPath('models/');
         objLoader.load('snowman.obj', function (object) {
 
+
             object.position.x = -300;
-            object.position.y = -150;
+            object.position.y =-150;
             object.position.z = 0;
 
             object.scale.set(20, 20, 20);
 
+            object.children[18].rotation.z = -Math.PI/8;
+
+            snow_mesh = object;
 
             group_objects.add(object);
+
         }, onProgress, onError);
     });
 
@@ -204,23 +215,7 @@ window.onload = function () {
         });
     }
 
-    mtlLoader.load('snowman.mtl', function (materials) {
-        materials.preload();
-        var objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials(materials);
-        objLoader.setPath('models/');
-        objLoader.load('snowman.obj', function (object) {
 
-            object.position.x = -300;
-            object.position.y = -100;
-            object.position.z = 0;
-
-            object.scale.set(20, 20, 20);
-
-
-            group_objects.add(object);
-        }, onProgress, onError);
-    });
 
     var manager = new THREE.LoadingManager();
 
@@ -360,9 +355,58 @@ function render() {
     var timer = Date.now() * 0.00025;
     treeGroup.rotation.y += (targetRotation - treeGroup.rotation.y) * 0.01;
 
+
+    for (var i = 0; i < snow_mesh.children.length; i++) {
+        if (snow_mesh.children[i].name == "Cylinder.000" || snow_mesh.children[i].name == "Cylinder.001" || snow_mesh.children[i].name == "Cylinder.002" || snow_mesh.children[i].name == "Cylinder.004") {
+            if(snow_mesh.children[i].rotation.y<-Math.PI/3){
+                positiveLeft = true;
+
+
+            }else if(snow_mesh.children[i].rotation.y>0){
+                positiveLeft = false;
+            }
+
+            if(positiveLeft){
+                snow_mesh.children[i].rotation.y+=0.01;
+
+            }else{
+                snow_mesh.children[i].rotation.y-=0.01;
+
+            }
+
+
+            //snow_mesh.children[i].rotation.y = rotation_hands;
+            //if(snow_mesh.children[i].rotation.y>Math.PI) {
+            //}else{
+                //snow_mesh.children[i].rotation.y += 0.01;
+
+            //}
+
+        }else  if (snow_mesh.children[i].name == "Cylinder.003" || snow_mesh.children[i].name == "Cylinder.005" || snow_mesh.children[i].name == "Cylinder.006" || snow_mesh.children[i].name == "Cylinder.007") {
+            if(snow_mesh.children[i].rotation.y>Math.PI/3){
+                positiveRight = false;
+
+
+            }else if(snow_mesh.children[i].rotation.y<0){
+                positiveRight = true;
+            }
+
+            if(positiveRight){
+                snow_mesh.children[i].rotation.y+=0.01;
+
+            }else{
+                snow_mesh.children[i].rotation.y-=0.01;
+
+            }
+        }
+
+    }
+
     camera.position.x = Math.cos(timer) * 1000;
     camera.position.z = Math.sin(timer) * 500;
     camera.lookAt(scene.position);
+
+
 
     renderer.render(scene, camera);
 
@@ -566,6 +610,7 @@ function onDocumentMouseDown(event) {
     document.addEventListener('mousemove', onDocumentMouseMove, false);
     document.addEventListener('mouseup', onDocumentMouseUp, false);
     document.addEventListener('mouseout', onDocumentMouseOut, false);
+
     mouseXOnMouseDown = event.clientX - windowHalfX;
     targetRotationOnMouseDown = targetRotation;
 }
@@ -601,6 +646,16 @@ function onDocumentTouchMove(event) {
         mouseX = event.touches[0].pageX - windowHalfX;
         targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
     }
+}
+
+function onWindowResize() {
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth  , window.innerHeight);
 }
 
 var onProgress = function (xhr) {
