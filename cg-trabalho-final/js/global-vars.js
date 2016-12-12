@@ -70,8 +70,12 @@ var group_objects;
 
 var snow_mesh;
 
+var groundMirror;
+
 var positiveLeft = false;
 var positiveRight = false;
+
+var light;
 
 
 

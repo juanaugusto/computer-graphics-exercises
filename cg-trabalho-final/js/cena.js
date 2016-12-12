@@ -9,7 +9,7 @@ window.onload = function () {
 
     scene = new THREE.Scene();
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({antialias : true});
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -24,11 +24,20 @@ window.onload = function () {
 
     scene.add(new THREE.AmbientLight(0xeef0ff));
 
-    var light = new THREE.DirectionalLight(0xffffff, 2);
+    light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(150, 100, 200);
-    light.castShadow = true;
-    light.shadowDarkness = 0.5;
-    light.shadowCameraVisible = true;
+
+    //light.castShadow = true;
+
+    var d = 200;
+
+    light.shadow.camera.left = -d;
+    light.shadow.camera.right = d;
+    light.shadow.camera.top = d;
+    light.shadow.camera.bottom = -d;
+
+    light.shadow.camera.far = 1000;
+
 
     scene.add(light);
 
@@ -45,7 +54,9 @@ window.onload = function () {
 
 
     var geometry_floor = new THREE.PlaneGeometry(1000, 1000);
+
     var mesh_floor = new THREE.Mesh(geometry_floor, material_floor);
+    mesh_floor.receiveShadow=true;
     mesh_floor.position.y = -200;
     mesh_floor.rotation.x = -Math.PI / 2;
     group_objects.add(mesh_floor);
@@ -89,6 +100,8 @@ window.onload = function () {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     renderer.autoClear = false;
+
+    renderer.shadowMap.enabled = true;
 
     play_audio();
 
@@ -300,6 +313,7 @@ window.onload = function () {
 
             if (access_bulb == bulb_positions.length - 1) {
                 treeGroup = makeTree();
+                //treeGroup.castShadow=true;
                 group_objects.add(treeGroup);
 
                 var imagePrefix = "img/skybox/";
@@ -342,19 +356,7 @@ function play_audio() {
     audio.play();
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-    render();
-}
-
-function render() {
-
-    renderer.clear();
-
-    particleSystem.rotation.x += 0.01;
-    var timer = Date.now() * 0.00025;
-    treeGroup.rotation.y += (targetRotation - treeGroup.rotation.y) * 0.01;
-
+function update_snowman(){
 
     for (var i = 0; i < snow_mesh.children.length; i++) {
         if (snow_mesh.children[i].name == "Cylinder.000" || snow_mesh.children[i].name == "Cylinder.001" || snow_mesh.children[i].name == "Cylinder.002" || snow_mesh.children[i].name == "Cylinder.004") {
@@ -373,14 +375,6 @@ function render() {
                 snow_mesh.children[i].rotation.y-=0.01;
 
             }
-
-
-            //snow_mesh.children[i].rotation.y = rotation_hands;
-            //if(snow_mesh.children[i].rotation.y>Math.PI) {
-            //}else{
-                //snow_mesh.children[i].rotation.y += 0.01;
-
-            //}
 
         }else  if (snow_mesh.children[i].name == "Cylinder.003" || snow_mesh.children[i].name == "Cylinder.005" || snow_mesh.children[i].name == "Cylinder.006" || snow_mesh.children[i].name == "Cylinder.007") {
             if(snow_mesh.children[i].rotation.y>Math.PI/3){
@@ -401,6 +395,22 @@ function render() {
         }
 
     }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    render();
+}
+
+function render() {
+
+    renderer.clear();
+
+    particleSystem.rotation.x += 0.01;
+    var timer = Date.now() * 0.00025;
+    treeGroup.rotation.y += (targetRotation - treeGroup.rotation.y) * 0.01;
+
+    update_snowman();
 
     camera.position.x = Math.cos(timer) * 1000;
     camera.position.z = Math.sin(timer) * 500;
